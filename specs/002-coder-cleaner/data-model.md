@@ -85,7 +85,7 @@ commit→merge handoff between branches.
 
 | Key | Type | Set by | Meaning |
 |-----|------|--------|---------|
-| `repo` | `str` | caller | local path or remote URL |
+| `repo` | `str` | caller | **local path** to a git working tree (no remote/clone) |
 | `branch` | `str` | caller | base branch the work derives from |
 | `commit_c` | `str` | coder | SHA the coder commits on branch A |
 | `worktree_a` / `branch_a` | `str` | coder | coder's isolated worktree + branch |

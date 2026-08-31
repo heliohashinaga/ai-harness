@@ -180,7 +180,8 @@ SwarmForge's `two-pack` — see `research.md`).
 
 ### Inputs
 
-- `repo`: a local path **or** a remote URL (cloned to a temp dir when URL).
+- `repo`: a **local path** to an existing git working tree (remote URLs are out of
+  scope for now — no clone).
 - `branch`: the base branch the work is derived from.
 - `task`: what the coder should change.
 

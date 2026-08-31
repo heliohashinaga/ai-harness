@@ -78,8 +78,7 @@ branches**:
 - Cleaner creates its own worktree/branch B and **merges `commit_c` into B**,
   cleans the declared files, and commits (`commit_b`).
 
-CLI surface (planned): `agentcrew-code --repo <path|URL> --branch <name>
+CLI surface (planned): `agentcrew-code --repo <local-path> --branch <name>
 --task "<...>"`. Exit codes follow the CLI contract (`0`/`1`/`4`).
 Guardrails: dedicated branches; no auto-commit on `main`/`master` without
-`--force`. **Remote push/PR is out of scope for now** — everything stays local
-(deferred).
+`--force`. **Local-only** — no remote clone, push, or PR (all deferred).
