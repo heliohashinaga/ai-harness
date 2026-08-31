@@ -17,6 +17,7 @@ from agentcrew.agents import cleaner as cleaner_agents
 from agentcrew.agents import coder as coder_agents
 from agentcrew.agents import repo as repo_scm
 from agentcrew.agents.clean_code_policy import read_clean_code_policy
+from agentcrew.agents.explorer import build_explorer_coder
 
 Chat = Callable[[str], str]
 
@@ -107,10 +108,19 @@ def run_repo_pipeline(
 
     # --- coder ---
     repo_scm.create_worktree(root, worktree_a, branch_a, base)
-    context = _read_context(repo_scm, root, context_files)
-    code = coder_agents.generate_code(
-        task, coder_chat or coder_agents.default_chat(provider, model), context
-    )
+    if coder_chat is not None:
+        context = _read_context(repo_scm, root, context_files)
+        code = coder_agents.generate_code(task, coder_chat, context)
+    else:
+        # Real run: use an agent that explores the repo itself (SwarmForge-like).
+        explorer = build_explorer_coder(
+            root,
+            provider=provider,
+            model=model,
+            target_file=target_file,
+            context_files=context_files,
+        )
+        code = explorer(task)
     repo_scm.write_file(worktree_a, target_file, code)
     commit_c = repo_scm.commit(worktree_a, [target_file], f"agent(coder): {task}")
     file_paths = [target_file]
