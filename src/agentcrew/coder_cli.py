@@ -30,28 +30,42 @@ _PROVIDER_KEY_ENV = {
     "opencode": "OPENCODE_GO_API_KEY",
 }
 
-_VALUE_FLAGS = ("--provider", "--model", "--format", "--repo", "--branch", "--file")
+_VALUE_FLAGS = (
+    "--provider", "--model", "--format", "--repo", "--branch", "--file", "--context"
+)
 
 
 def _parse(argv: list[str]) -> tuple[dict[str, str], list[str]]:
     options: dict[str, str] = {}
-    positionals: list[str] = []
+    positions: list[str] = []
     i = 0
     while i < len(argv):
         arg = argv[i]
         if arg in _VALUE_FLAGS:
             if i + 1 >= len(argv):
                 raise ValueError(f"{arg} requires a value")
-            options[arg[2:]] = argv[i + 1]
+            value = argv[i + 1]
+            if arg == "--context":
+                options["contexts"] = _join_ctx(options.get("contexts", ""), value)
+            else:
+                options[arg[2:]] = value
             i += 2
         elif any(arg.startswith(f"{f}=") for f in _VALUE_FLAGS):
             name, _, value = arg.partition("=")
-            options[name[2:]] = value
+            if name == "--context":
+                options["contexts"] = _join_ctx(options.get("contexts", ""), value)
+            else:
+                options[name[2:]] = value
             i += 1
         else:
-            positionals.append(arg)
+            positions.append(arg)
             i += 1
-    return options, positionals
+    return options, positions
+
+
+def _join_ctx(existing: str, value: str) -> str:
+    """Join context paths with commas, tolerating repeated/`=` forms."""
+    return ",".join(part for part in [existing, value] if part)
 
 
 def _build_graph(provider: str, model: str | None):
@@ -77,6 +91,7 @@ def _run_repo_mode(options: dict[str, str], provider: str, task: str) -> int:
             options.get("file") or "",
             provider=provider,
             model=options.get("model"),
+            context_files=_context_list(options),
         )
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -99,6 +114,12 @@ def _run_repo_mode(options: dict[str, str], provider: str, task: str) -> int:
         )
         print(f"see: worktree {result.worktree_b}")
     return 0
+
+
+def _context_list(options: dict[str, str]) -> list[str]:
+    """Split the accumulated ``--context`` list into repo-relative paths."""
+    raw = options.get("contexts", "")
+    return [p for p in (raw.split(",") if raw else []) if p.strip()]
 
 
 def main(argv: Sequence[str] | None = None) -> int:

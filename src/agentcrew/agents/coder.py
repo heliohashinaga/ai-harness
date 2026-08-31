@@ -38,9 +38,23 @@ def default_chat(provider: str, model: str | None) -> Chat:
     return chat
 
 
-def generate_code(task: str, chat: Chat) -> str:
+def generate_code(task: str, chat: Chat, context: str = "") -> str:
     """Return code content for ``task`` (language-agnostic)."""
-    return chat(_PROMPT.format(task=task))
+    return chat(build_coder_prompt(task, context))
+
+
+def build_coder_prompt(task: str, context: str = "") -> str:
+    """Build the coder prompt; optionally append repository reference files."""
+    prompt = _PROMPT.format(task=task)
+    if context:
+        prompt = (
+            prompt
+            + "\n\nReference files from the repository — use them to match the "
+            "existing style, structure, and fixtures:\n```\n"
+            + context
+            + "\n```"
+        )
+    return prompt
 
 
 def build_coder_node(

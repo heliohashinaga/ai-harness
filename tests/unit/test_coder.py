@@ -21,6 +21,19 @@ def test_coder_is_language_agnostic():
     assert out["coder_output"].startswith("def add")
 
 
+def test_generate_code_passes_context():
+    seen: list[str] = []
+
+    def spy(prompt: str) -> str:
+        seen.append(prompt)
+        return "code"
+
+    from agentcrew.agents.coder import generate_code
+
+    generate_code("task", spy, context="CUSTOM-CONTEXT")
+    assert seen and "CUSTOM-CONTEXT" in seen[0]
+
+
 def test_coder_rejects_blank_task():
     node = _node()
     try:

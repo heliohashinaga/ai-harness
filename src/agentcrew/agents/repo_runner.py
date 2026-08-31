@@ -21,6 +21,18 @@ from agentcrew.agents.clean_code_policy import read_clean_code_policy
 Chat = Callable[[str], str]
 
 
+def _read_context(
+    scm, worktree, context_files: list[str] | None
+) -> str:
+    """Read repo reference files and format them as coder context."""
+    if not context_files:
+        return ""
+    blocks: list[str] = []
+    for rel in context_files:
+        blocks.append(f"### {rel}\n" + scm.read_file(worktree, rel))
+    return "\n\n".join(blocks)
+
+
 class RepoRunResult:
     """Outcome of a repo-mode run (worktree/branch/commit identities)."""
 
@@ -75,6 +87,7 @@ def run_repo_pipeline(
     provider: str = "openrouter",
     model: str | None = None,
     base_dir: Path | None = None,
+    context_files: list[str] | None = None,
 ) -> RepoRunResult:
     """Run coder->cleaner on a local repo across two per-agent worktrees."""
     root, base = repo_scm.resolve_repo(repo_path, branch)
@@ -94,8 +107,9 @@ def run_repo_pipeline(
 
     # --- coder ---
     repo_scm.create_worktree(root, worktree_a, branch_a, base)
+    context = _read_context(repo_scm, root, context_files)
     code = coder_agents.generate_code(
-        task, coder_chat or coder_agents.default_chat(provider, model)
+        task, coder_chat or coder_agents.default_chat(provider, model), context
     )
     repo_scm.write_file(worktree_a, target_file, code)
     commit_c = repo_scm.commit(worktree_a, [target_file], f"agent(coder): {task}")

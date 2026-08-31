@@ -62,3 +62,25 @@ def test_repo_pipeline_cleaner_failure_fails_gracefully(tmp_path):
     )
     # Cleaner couldn't refine -> code passes through unchanged.
     assert scm.read_file(result.worktree_b, "code.py") == "x = 1\n"
+
+
+def test_repo_pipeline_reads_context_files_before_coding(tmp_path):
+    repo = _init_repo(tmp_path)
+    (repo / "SPEC.md").write_text("Entity name is Document", encoding="utf-8")
+    seen: list[str] = []
+
+    def coder_chat(prompt: str) -> str:
+        seen.append(prompt)
+        return "code"
+
+    run_repo_pipeline(
+        repo,
+        "main",
+        "write a test",
+        "new.cs",
+        coder_chat=coder_chat,
+        cleaner_chat=lambda _p: "code",
+        base_dir=tmp_path / "wt",
+        context_files=["SPEC.md"],
+    )
+    assert seen and "Entity name is Document" in seen[0]
