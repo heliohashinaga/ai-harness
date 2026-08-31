@@ -16,7 +16,8 @@ cleans it before it is considered done.
 
 - Q: O cleaner deve fazer formatação ou só clean code semântico? → A: **só clean
   code semântico** (nomeação, funções pequenas, remover comentários
-  redundantes); formatação é delegada ao Black/ruff, fora do cleaner (FR-005).
+  redundantes); formatação é delegada a um formatter determinístico (Black, ruff,
+  prettier…), fora do cleaner (FR-005).
 - Q: Precisa de CLI para rodar o pipeline? → A: sim, um comando **`agentcrew-code`**
   é parte do escopo planejado, mas pode ser entregue depois da biblioteca/tests.
 - Q: Onde fica o plano? → A: persistido em `specs/002-coder-cleaner/` (este pacote).
@@ -86,8 +87,8 @@ cleaner) is covered by integration tests marked `integration`/`live` (opt-in).
 - **FR-004**: The pipeline MUST expose the result of each stage (coder output,
   cleaner output) so the handoff is observable.
 - **FR-005**: The cleaner MUST NOT be responsible for formatting. Formatting is
-  delegated to a deterministic formatter (Black/ruff) run outside the cleaner
-  node, exactly as the project's CI/editor tooling already does today.
+  delegated to a deterministic formatter (e.g. Black, ruff, prettier, gofmt) run
+  outside the cleaner node, so output is consistent and not LLM-invented.
 - **FR-006**: LLM-backed behavior MUST be opt-in (require an API key for the
   chosen provider, like `agentcrew-llm`); the graph plumbing MUST be testable
   offline (verified with stubbed node outputs, no credentials).
@@ -106,7 +107,7 @@ cleaner) is covered by integration tests marked `integration`/`live` (opt-in).
   to the code the coder generated: descriptive naming, small single-purpose
   functions, removing redundant comments. It is **LLM-backed** (opt-in) and is
   deliberately **not** responsible for formatting — formatting is delegated to a
-  deterministic formatter (Black/ruff) outside the cleaner node. Emits
+  deterministic formatter (Black/ruff, prettier, …) outside the cleaner node. Emits
   `cleaner_output`.
 - **CoderCleanerGraph**: The orchestration unit — a LangGraph `StateGraph`
   (START → coder → cleaner → END) binding the two agents and their shared state.
@@ -141,17 +142,17 @@ cleaner) is covered by integration tests marked `integration`/`live` (opt-in).
   generic clean-code standards (descriptive naming, small single-purpose
   functions, removing redundant comments) in whatever language the code is. It is
   explicitly **not** responsible for formatting — formatting is delegated to a
-  deterministic formatter (Black/ruff) where the project already runs it
-  (CI/editor tooling), which remains Python-only; the LLM never touches
-  formatting (FR-005), and no per-language rules/formatting run inside the
-  pipeline for non-Python output.
+  deterministic formatter (e.g. Black/ruff, prettier) where the project already
+  runs it (CI/editor tooling), which remains Python-scoped unless a formatter is
+  configured for it; the LLM never touches formatting (FR-005), and no
+  per-language rules/formatting run inside the pipeline for non-Python output.
 - Removing dead code / unused imports is a future "lint" step, out of v1 (it
   requires interpreting the language).
 - A console script **`agentcrew-code`** exposes the pipeline (same exit-code
   protocol `0`/`1`/`4`, text/JSON output) following constitution Principle II.
 - The pipeline does not ship its own formatter and the cleaner never invokes
-  formatting (FR-005) — Black/ruff remain the single deterministic formatting
-  path, identical to the repo's CI/editor tooling.
+  formatting (FR-005) — a deterministic formatter (Black/ruff, prettier, …) is
+  the single formatting path, identical to the repo's CI/editor tooling.
 - LangSmith tracing is opt-in via the existing `LANGSMITH_*` env vars.
 
 ## Out of Scope (v1)
@@ -165,5 +166,6 @@ cleaner) is covered by integration tests marked `integration`/`live` (opt-in).
 - A marketplace or multi-language codegen *beyond* the prompt-driven coder: the
   coder is language-agnostic, but only via LLM prompting — there is no
   per-language engine, formatter, or linter inside the pipeline. Formatting stays
-  only in the repo's existing Python tooling (Black/ruff); "lint" (dead code /
-  unused imports) remains a future step.
+  only with the deterministic formatter configured for the language (e.g.
+  Black/ruff for Python, prettier for JS/TS); "lint" (dead code / unused imports)
+  remains a future step.
