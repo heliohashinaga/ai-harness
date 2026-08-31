@@ -79,7 +79,7 @@ branches**:
   cleans the declared files, and commits (`commit_b`).
 
 CLI surface (planned): `agentcrew-code --repo <path|URL> --branch <name>
---task "<...>" [--pr]`. Exit codes follow the CLI contract (`0`/`1`/`4`).
+--task "<...>"`. Exit codes follow the CLI contract (`0`/`1`/`4`).
 Guardrails: dedicated branches; no auto-commit on `main`/`master` without
-`--force`; `--pr` pushes branch B + opens a draft PR (no auto-merge); without
-auth the run stays local.
+`--force`. **Remote push/PR is out of scope for now** — everything stays local
+(deferred).

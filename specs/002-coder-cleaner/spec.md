@@ -193,8 +193,9 @@ SwarmForge's `two-pack` — see `research.md`).
    `commit_c` into B** (same mechanism as SwarmForge `ready_for_next`/`git merge`),
    applies the semantic clean-code policy to the declared files **in B**, and
    **commits** the cleaned result → `commit_b`, `branch_b`.
-3. **(Remote, opt-in)** push branch B and open a **draft PR** (base `branch`) —
-   never auto-merge (see Security). Without auth, stays local.
+3. **Local for now:** everything stays **local** — no remote push or PR in the
+   current scope. (A remote draft-PR flow is deferred; see Out of Scope additions
+   below.)
 
 These changes live on **branches** (via commits in the worktrees); they propagate
 between agents by **merging the sender's commit**, not as loose files.
@@ -211,6 +212,7 @@ between agents by **merging the sender's commit**, not as loose files.
   merge/PR.
 - No auto-commit on protected/default branches (`main`/`master`) without `--force`;
   dedicated branches by default.
-- No push/PR unless requested (`--pr` for remote); auto-merge is never performed.
+- No remote push/PR in the current scope (deferred) — everything stays local;
+  auto-merge is never performed.
 - Coder reads context only from declared files (prompt-injection guard); generated
   code is **not executed**; secrets stay out of generated files/logs (`.env*`).
