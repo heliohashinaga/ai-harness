@@ -76,3 +76,27 @@ The cleaner holds a single, well-scoped responsibility — **semantic clean code
 — and defers formatting to a deterministic formatter, so responsibilities do not
 overlap (FR-005). InMemorySaver (if used) is only for dev/tests; persistence
 across processes is out of scope.
+---
+
+## Repo Mode (planned extension)
+
+When working on a real repo+branch, the shared state is extended for the
+commit→merge handoff between branches.
+
+| Key | Type | Set by | Meaning |
+|-----|------|--------|---------|
+| `repo` | `str` | caller | local path or remote URL |
+| `branch` | `str` | caller | base branch the work derives from |
+| `commit_c` | `str` | coder | SHA the coder commits on branch A |
+| `worktree_a` / `branch_a` | `str` | coder | coder's isolated worktree + branch |
+| `file_paths` | `list[str]` | coder | files the coder wrote (scope for cleaner) |
+| `commit_b` | `str` | cleaner | SHA the cleaner commits on branch B |
+| `worktree_b` / `branch_b` | `str` | cleaner | cleaner's isolated worktree + branch |
+| `cleaned_files` | `list[str]` | cleaner | files the cleaner cleaned in B |
+
+**Transition (repo mode):**
+`START → coder commits (A, commit_c) → cleaner merges commit_c into B →
+cleaner cleans declared files in B → cleaner commits B (commit_b) → END`.
+
+Files are scoped to `file_paths` only; paths are validated (no traversal out of
+the worktree). Formatting stays with a deterministic formatter per FR-005.

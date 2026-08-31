@@ -169,3 +169,48 @@ cleaner) is covered by integration tests marked `integration`/`live` (opt-in).
   only with the deterministic formatter configured for the language (e.g.
   Black/ruff for Python, prettier for JS/TS); "lint" (dead code / unused imports)
   remains a future step.
+---
+
+## Planned Extension: Repo & Branch Mode
+
+**Status:** planned (post-v1); not yet implemented. Extends the text pipeline so a
+user can point the pipeline at a real repository and have `coder`/`cleaner` work
+on it, with a **commit→merge handoff between branches** (pattern from
+SwarmForge's `two-pack` — see `research.md`).
+
+### Inputs
+
+- `repo`: a local path **or** a remote URL (cloned to a temp dir when URL).
+- `branch`: the base branch the work is derived from.
+- `task`: what the coder should change.
+
+### Flow (commit→merge between branches)
+
+1. **Coder** creates a **worktree A** (attached to its own dedicated branch,
+   e.g. `agent/coder-<ts>`), reads context, writes files, and **commits** → state
+   carries `commit_c` (the SHA), `worktree_a`, `branch_a`, `file_paths`.
+2. **Cleaner** creates its **own worktree B** (attached to branch B), **merges
+   `commit_c` into B** (same mechanism as SwarmForge `ready_for_next`/`git merge`),
+   applies the semantic clean-code policy to the declared files **in B**, and
+   **commits** the cleaned result → `commit_b`, `branch_b`.
+3. **(Remote, opt-in)** push branch B and open a **draft PR** (base `branch`) —
+   never auto-merge (see Security). Without auth, stays local.
+
+These changes live on **branches** (via commits in the worktrees); they propagate
+between agents by **merging the sender's commit**, not as loose files.
+
+### Data model (repo mode)
+
+`TaskState` is extended with: `repo`, `branch`, `commit_c`, `commit_b`,
+`worktree_a`, `worktree_b`, `branch_a`, `branch_b`, `file_paths`,
+`cleaned_files`. See `data-model.md`.
+
+### Scope & guardrails
+
+- Worktrees isolate each agent; the main checkout is untouched until a deliberate
+  merge/PR.
+- No auto-commit on protected/default branches (`main`/`master`) without `--force`;
+  dedicated branches by default.
+- No push/PR unless requested (`--pr` for remote); auto-merge is never performed.
+- Coder reads context only from declared files (prompt-injection guard); generated
+  code is **not executed**; secrets stay out of generated files/logs (`.env*`).

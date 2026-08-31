@@ -67,3 +67,19 @@ functions whose underlying LLM call is replaced by a stub returning a fixed
 This is the basis of `tests/contract/test_coder_cleaner_graph.py` (T005) and
 `tests/contract/test_coder_cli.py` (T011). Formatting is **not** part of the
 cleaner (FR-005): use `ruff format`/Black at the CI/editor seam, never the LLM.
+---
+
+## Repo mode handoff (planned)
+
+When a real repo+branch is supplied, the handoff is **commit→merge between
+branches**:
+
+- Coder commits on its worktree/branch A (`commit_c`).
+- Cleaner creates its own worktree/branch B and **merges `commit_c` into B**,
+  cleans the declared files, and commits (`commit_b`).
+
+CLI surface (planned): `agentcrew-code --repo <path|URL> --branch <name>
+--task "<...>" [--pr]`. Exit codes follow the CLI contract (`0`/`1`/`4`).
+Guardrails: dedicated branches; no auto-commit on `main`/`master` without
+`--force`; `--pr` pushes branch B + opens a draft PR (no auto-merge); without
+auth the run stays local.
