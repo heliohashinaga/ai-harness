@@ -47,6 +47,14 @@ def default_chat(provider: str, model: str | None) -> Chat:
     return chat
 
 
+def clean_code_text(code: str, chat: Chat, policy: str = CLEAN_CODE_POLICY) -> str:
+    """Return ``code`` cleaned by ``chat`` per ``policy``; fail-safe to input."""
+    try:
+        return chat(_PROMPT_TEMPLATE.format(policy=policy, code=code))
+    except Exception:  # noqa: BLE001 - graceful fallback per spec
+        return code
+
+
 def build_cleaner_node(
     *,
     chat: Chat | None = None,
@@ -68,12 +76,8 @@ def build_cleaner_node(
         refined = code
         applied = False
         if chat is not None:  # only attempt LLM when explicitly configured
-            try:
-                prompt = _PROMPT_TEMPLATE.format(policy=policy, code=code)
-                refined = effective(prompt)
-                applied = True
-            except Exception:  # noqa: BLE001 - graceful fallback per spec
-                refined = code
+            refined = clean_code_text(code, effective, policy)
+            applied = refined != code
         CleanerOutput(code=code, refined=refined, llm_refine_applied=applied)
         return {"cleaner_output": refined}
 

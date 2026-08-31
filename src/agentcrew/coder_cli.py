@@ -13,19 +13,24 @@ from collections.abc import Sequence
 
 from agentcrew.agents import cleaner as cleaner_agents
 from agentcrew.agents import coder as coder_agents
+from agentcrew.agents import repo as repo_scm
 from agentcrew.agents.clean_code_policy import read_clean_code_policy
+from agentcrew.agents.repo_runner import run_repo_pipeline
 from agentcrew.graphs.coder_cleaner import build_coder_cleaner_graph
 from agentcrew.nodes import llm as llm_nodes
 
 _USAGE = (
     "usage: agentcrew-code [--provider openrouter|opencode] "
-    "[--model NAME] [--format text|json] <task>"
+    "[--model NAME] [--format text|json] "
+    "[--repo <local-path> [--branch NAME] [--file RELPATH]] <task>"
 )
 
 _PROVIDER_KEY_ENV = {
     "openrouter": "OPENROUTER_API_KEY",
     "opencode": "OPENCODE_GO_API_KEY",
 }
+
+_VALUE_FLAGS = ("--provider", "--model", "--format", "--repo", "--branch", "--file")
 
 
 def _parse(argv: list[str]) -> tuple[dict[str, str], list[str]]:
@@ -34,19 +39,14 @@ def _parse(argv: list[str]) -> tuple[dict[str, str], list[str]]:
     i = 0
     while i < len(argv):
         arg = argv[i]
-        if arg in ("--provider", "--model", "--format"):
+        if arg in _VALUE_FLAGS:
             if i + 1 >= len(argv):
                 raise ValueError(f"{arg} requires a value")
             options[arg[2:]] = argv[i + 1]
             i += 2
-        elif arg.startswith("--provider="):
-            options["provider"] = arg.split("=", 1)[1]
-            i += 1
-        elif arg.startswith("--model="):
-            options["model"] = arg.split("=", 1)[1]
-            i += 1
-        elif arg.startswith("--format="):
-            options["format"] = arg.split("=", 1)[1]
+        elif any(arg.startswith(f"{f}=") for f in _VALUE_FLAGS):
+            name, _, value = arg.partition("=")
+            options[name[2:]] = value
             i += 1
         else:
             positionals.append(arg)
@@ -65,6 +65,40 @@ def _build_graph(provider: str, model: str | None):
         # Honor the clean-code skill (SKILL.md) when present; else bundled policy.
         cleaner_policy=read_clean_code_policy(),
     )
+
+
+def _run_repo_mode(options: dict[str, str], provider: str, task: str) -> int:
+    """Run repo mode (worktrees + commit->merge). Returns exit code."""
+    try:
+        result = run_repo_pipeline(
+            options["repo"],
+            options.get("branch", "HEAD"),
+            task,
+            options.get("file") or "",
+            provider=provider,
+            model=options.get("model"),
+        )
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        print(_USAGE, file=sys.stderr)
+        return 1
+    except repo_scm.RepoError as exc:
+        print(f"error: repo: {exc}", file=sys.stderr)
+        return 4
+    except Exception as exc:  # noqa: BLE001 - CLI boundary -> exit 4
+        print(f"error: pipeline failed: {exc}", file=sys.stderr)
+        return 4
+
+    if options.get("format", "text") == "json":
+        print(json.dumps(result.as_dict()))
+    else:
+        print(
+            f"cleaner branch {result.branch_b} commit {result.commit_b[:8]} "
+            f"cleaned {len(result.cleaned_files)} file(s): "
+            f"{', '.join(result.cleaned_files)}"
+        )
+        print(f"see: worktree {result.worktree_b}")
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -97,19 +131,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         return 4
 
-    model = options.get("model")
+    if options.get("repo"):
+        return _run_repo_mode(options, provider, task)
+    return _run_text_mode(
+        provider, options.get("model"), task, options.get("format", "text")
+    )
+
+
+def _run_text_mode(provider: str, model: str | None, task: str, fmt: str) -> int:
+    """Execute text mode: compose the graph over a task string. Returns exit code."""
     try:
         graph = _build_graph(provider, model)
         result = graph.invoke({"task": task})
     except ValueError:
-        # Blank/whitespace-only task -> usage error.
         print("error: <task> must be non-empty", file=sys.stderr)
         return 1
     except Exception as exc:  # noqa: BLE001 - CLI boundary maps failures to exit 4
         print(f"error: pipeline failed: {exc}", file=sys.stderr)
         return 4
 
-    if options.get("format", "text") == "json":
+    if fmt == "json":
         print(
             json.dumps(
                 {
@@ -123,7 +164,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         print(result["cleaner_output"])
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

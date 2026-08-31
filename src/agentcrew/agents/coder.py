@@ -38,6 +38,11 @@ def default_chat(provider: str, model: str | None) -> Chat:
     return chat
 
 
+def generate_code(task: str, chat: Chat) -> str:
+    """Return code content for ``task`` (language-agnostic)."""
+    return chat(_PROMPT.format(task=task))
+
+
 def build_coder_node(
     *,
     chat: Chat | None = None,
@@ -52,7 +57,7 @@ def build_coder_node(
         task = state["task"]
         # Validate input (raises ValueError on blank task).
         CoderOutput(task=task, model=model or provider, code="")
-        code = effective(_PROMPT.format(task=task))
+        code = generate_code(task, effective)
         return {"coder_output": code}
 
     return coder_node
