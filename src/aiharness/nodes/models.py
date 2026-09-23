@@ -5,8 +5,8 @@ from typing import TypedDict
 
 from pydantic import BaseModel, Field, field_validator
 
+# Injectable LLM chat callable (prompt -> text); tests stub it.
 Chat = Callable[[str], str]
-"""Injectable LLM chat callable (prompt -> text); tests stub it."""
 
 
 class HelloWorldNodeResult(BaseModel):
