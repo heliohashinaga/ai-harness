@@ -3,9 +3,9 @@
 This is the first *networked* node in aiharness. It is a LangChain ``Runnable``
 just like ``hello_world`` (same ``invoke``/``stream`` semantics), but it reaches
 out to a hosted OpenAI-compatible chat endpoint. It requires an API key for the
-chosen provider and network access. It is intentionally *not* imported by the
-offline CLI path so the base stays deterministic — this node is opt-in for LLM
-testing/tracing.
+chosen provider and network access. Importing this module is offline-safe
+(dotenv only); only *invoking* needs key + network — clients are built
+lazily, so offline code may import the factories freely.
 
 Two providers are supported out of the box, both served through the OpenAI
 ``/v1/chat/completions`` shape:
@@ -52,7 +52,11 @@ _PROVIDER_DEFAULTS: dict[Provider, dict[str, str]] = {
 }
 
 
-def _resolve(provider: Provider, field: str, explicit: str | None) -> str:
+def _resolve(
+    provider: Provider,
+    field: Literal["api_key", "model", "base_url"],
+    explicit: str | None,
+) -> str:
     """Resolve a config value by precedence: explicit arg -> env -> preset default.
 
     Only the ``model`` field reads an env var override (``*_MODEL``); the API
@@ -96,7 +100,7 @@ def provider_api_key(provider: Provider) -> str:
 
 @lru_cache(maxsize=8)
 def _cached_chat(
-    provider: str, model: str, api_key: str, base_url: str
+    provider: Provider, model: str, api_key: str, base_url: str
 ) -> ChatOpenAI:
     """Return a cached chat client so repeated invokes reuse one connection."""
     return _build_chat(provider, model=model, api_key=api_key, base_url=base_url)
