@@ -1,0 +1,11 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "67 passed, 2 deselected (was 65 passed before; +2 new regression tests)"
+  criteria:
+    - {id: invalid-rejected, status: pass, proof: "`--format xml` exits 1, stdout 0 bytes, usage on stderr"}
+    - {id: valid-unchanged, status: pass, proof: "`--format json/text/=forms` spot-checked; existing contract tests green"}
+    - {id: regression-test, status: pass, proof: "test_cli_invalid_format_exits_one (2 params) in test_hello_world_cli.py"}
+    - {id: gate, status: pass, proof: "scripts gate equivalent (ruff + pytest) green; no new dependency"}
+feedback: "none — done first attempt"
+attempts: 1

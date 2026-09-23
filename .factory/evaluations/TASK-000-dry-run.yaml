@@ -1,0 +1,13 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "72 passed, 2 deselected (was 70; +2 new dry-run tests)"
+  criteria:
+    - {id: dry-run-text, status: pass, proof: "test_cli_dry_run_text_prints_plan green"}
+    - {id: dry-run-json, status: pass, proof: "test_cli_dry_run_json_marks_payload green"}
+    - {id: existing-unchanged, status: pass, proof: "full suite green incl. complexity gate"}
+    - {id: gate, status: pass, proof: "ruff + pytest + complexity green; no new dependency"}
+feedback: "attempt 1 failed only on complexity budget; extracted _emit_output on attempt 2"
+attempts: 2
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session; attempt-1 FAIL in TASK-000-dry-run-attempt1.yaml"

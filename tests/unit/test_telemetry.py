@@ -42,3 +42,24 @@ def test_empty_handler_stats():
     assert handler.avg_latency_ms() is None
     assert handler.runs == []
     assert handler.errors == []
+
+
+def test_error_rate_no_runs_returns_none():
+    handler = MetricsCallbackHandler()
+    assert handler.error_rate() is None
+
+
+def test_error_rate_all_ok_returns_zero():
+    handler = MetricsCallbackHandler()
+    handler.on_chain_start({}, {}, run_id="a")
+    handler.on_chain_end({}, run_id="a")
+    assert handler.error_rate() == 0.0
+
+
+def test_error_rate_mixed_returns_fraction():
+    handler = MetricsCallbackHandler()
+    handler.on_chain_start({}, {}, run_id="a")
+    handler.on_chain_end({}, run_id="a")
+    handler.on_chain_start({}, {}, run_id="b")
+    handler.on_chain_error(ValueError("boom"), run_id="b")
+    assert handler.error_rate() == 0.5

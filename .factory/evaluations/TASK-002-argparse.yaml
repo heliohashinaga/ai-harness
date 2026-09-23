@@ -1,0 +1,13 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "72 passed, 2 deselected — zero test edits (all pre-existing tests pin behavior)"
+  criteria:
+    - {id: tests-unchanged, status: pass, proof: "git diff shows no tests/ changes; 72 passed"}
+    - {id: identical-behavior, status: pass, proof: "verb, --format space/= forms, exit codes 0/1/4, stdout/stderr discipline all green"}
+    - {id: help-from-argparse, status: pass, proof: "`--help` prints argparse help, exit 0 (was 'Hello, --help!')"}
+    - {id: gate, status: pass, proof: "ruff + pytest + complexity green; hand-rolled loop deleted"}
+feedback: "none — done first attempt"
+attempts: 1
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session. Sanctioned deltas: --help now argparse (exit 0); bare `--format` message now argparse's (exit still 1)."

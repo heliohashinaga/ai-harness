@@ -93,3 +93,8 @@ class MetricsCallbackHandler(BaseCallbackHandler):
     def avg_latency_ms(self) -> float | None:
         values = [m.latency_ms for m in self.runs]
         return (sum(values) / len(values)) if values else None
+
+    def error_rate(self) -> float | None:
+        if not self.runs:
+            return None
+        return len(self.errors) / len(self.runs)

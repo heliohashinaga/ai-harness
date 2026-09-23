@@ -1,0 +1,12 @@
+verdict: FAIL
+evidence:
+  build: "ruff not yet run on attempt 1"
+  tests: "tests/unit/test_telemetry.py — 2 failed, 4 passed"
+  criteria:
+    - {id: helper, status: pass, proof: "error_rate() implementation correct"}
+    - {id: unit-test, status: fail, proof: "TypeError at test_telemetry.py:61 — on_chain_start() missing required kwarg run_id"}
+    - {id: gate, status: fail, proof: "pytest red"}
+feedback: "on_chain_start/end/error require keyword-only run_id (see telemetry.py signatures). Pass run_id='a'/'b' in the new tests."
+attempts: 1
+tokens: {prompt: 236, completion: 1916, total: 2152}
+latency_ms: 88988

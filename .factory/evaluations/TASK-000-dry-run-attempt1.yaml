@@ -1,0 +1,12 @@
+verdict: FAIL
+evidence:
+  build: "ruff clean"
+  tests: "71 passed, 1 failed"
+  criteria:
+    - {id: dry-run-flag, status: pass, proof: "2 new dry-run tests green"}
+    - {id: existing-unchanged, status: pass, proof: "all prior tests green"}
+    - {id: quality-gate, status: fail, proof: "test_max_cyclomatic_complexity: cli.py::main complexity 12 > budget 10"}
+feedback: "extract output emission into a helper to bring main back under the complexity budget"
+attempts: 1
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session, no provider call"

@@ -25,8 +25,9 @@ venv/
 # Local session data
 .pi/
 
-# Local runtime data (spec stores, telemetry)
-.factory/
+# Factory scratch state only (current run pointer). Tasks, evaluations and
+# config are the lab notebook and stay versioned (ADR-0001: evidence first).
+.factory/state/
 
 # Local tooling (speckit/specify scaffolding)
 .specify/

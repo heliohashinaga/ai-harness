@@ -7,6 +7,7 @@ mocked/stubbed. The real end-to-end call is exercised manually / via the
 """
 
 import json
+import os
 import subprocess
 import sys
 
@@ -91,10 +92,11 @@ def test_console_module_smoke_end_to_end_missing_key():
         capture_output=True,
         text=True,
         check=False,
-        # Hermetic: force keys empty so the real .env cannot make this test
-        # attempt a real (networked) call.
+        # Hermetic: inherit the OS env (Windows needs a real PATH for sockets)
+        # but force keys empty so a real .env cannot trigger a network call
+        # (load_dotenv never overrides vars already present in the env).
         env={
-            "PATH": "/usr/bin:/bin",
+            **os.environ,
             "PYTHONPATH": "",
             "OPENROUTER_API_KEY": "",
             "OPENCODE_GO_API_KEY": "",

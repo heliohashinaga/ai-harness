@@ -54,6 +54,37 @@ def test_cli_runtime_failure_exit_four(monkeypatch, capsys):
     assert capsys.readouterr().out == ""
 
 
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["--format", "xml", "hello", "world"],
+        ["hello", "world", "--format=jsonx"],
+    ],
+)
+def test_cli_invalid_format_exits_one(argv, capsys):
+    code = cli.main(argv)
+    assert code == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "--format" in captured.err
+
+
+def test_cli_dry_run_text_prints_plan(capsys):
+    code = cli.main(["hello", "world", "--dry-run"])
+    assert code == 0
+    assert capsys.readouterr().out == "dry-run: Hello, world!\n"
+
+
+def test_cli_dry_run_json_marks_payload(capsys):
+    code = cli.main(["hello", "world", "--dry-run", "--format", "json"])
+    assert code == 0
+    assert json.loads(capsys.readouterr().out) == {
+        "input": "world",
+        "greeting": "Hello, world!",
+        "dry_run": True,
+    }
+
+
 def test_console_module_smoke_end_to_end():
     """Run the real `python -m agentcrew.cli` entry point end-to-end."""
     result = subprocess.run(

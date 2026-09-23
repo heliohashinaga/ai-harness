@@ -18,6 +18,7 @@ Two providers are supported out of the box, both served through the OpenAI
 from __future__ import annotations
 
 import os
+import uuid
 from functools import lru_cache
 from typing import Literal
 
@@ -77,7 +78,12 @@ def _build_chat(
     api_key: str,
     base_url: str,
 ) -> ChatOpenAI:
-    return ChatOpenAI(model=model, api_key=api_key or None, base_url=base_url)
+    extra: dict = {}
+    if provider == "opencode":
+        # OpenCode Go routes chat completions per session; without this
+        # header every call fails with MissingSessionID (HTTP 400).
+        extra["default_headers"] = {"x-opencode-session": uuid.uuid4().hex}
+    return ChatOpenAI(model=model, api_key=api_key or None, base_url=base_url, **extra)
 
 
 def provider_api_key(provider: Provider) -> str:

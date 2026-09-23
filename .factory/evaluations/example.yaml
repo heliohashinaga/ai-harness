@@ -1,0 +1,7 @@
+verdict: FAIL
+evidence:
+  build: unknown
+  tests: unknown
+  criteria:
+    - {id: example-criterion, status: fail, proof: "no change produced yet"}
+feedback: "Replace with the evaluator output for a real task."

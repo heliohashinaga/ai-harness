@@ -1,0 +1,14 @@
+version: 1
+max_attempts: 3
+evaluator:
+  deterministic_first: true
+  llm_judge: optional # only for properties no script can check
+metrics:
+  - task_success
+  - first_attempt_success
+  - retry_rate
+  - human_intervention_rate
+  - regression_rate
+  - tokens_used
+  - cost
+  - latency

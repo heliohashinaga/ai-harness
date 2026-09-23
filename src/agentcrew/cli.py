@@ -6,6 +6,7 @@ node, formats output (human-readable or JSON), and maps results to exit codes.
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from collections.abc import Sequence
@@ -14,7 +15,7 @@ from dotenv import load_dotenv
 
 from agentcrew.nodes.hello_world import build_hello_world_node
 
-_USAGE = "usage: agentcrew-hello [hello] <text> [--format text|json]"
+_USAGE = "usage: agentcrew-hello [hello] <text> [--format text|json] [--dry-run]"
 
 # Load optional LANGSMITH_* (and other) vars from a local .env if present.
 # Does not override already-set environment variables. Runs before any
@@ -22,25 +23,41 @@ _USAGE = "usage: agentcrew-hello [hello] <text> [--format text|json]"
 load_dotenv()
 
 
-def _parse_format(argv: list[str]) -> tuple[str, list[str]]:
-    """Split ``argv`` into (format, positionals), tolerating ``--format`` anywhere."""
-    fmt = "text"
-    positionals: list[str] = []
-    i = 0
-    while i < len(argv):
-        arg = argv[i]
-        if arg == "--format":
-            if i + 1 >= len(argv):
-                raise ValueError("--format requires a value")
-            fmt = argv[i + 1]
-            i += 2
-        elif arg.startswith("--format="):
-            fmt = arg.split("=", 1)[1]
-            i += 1
-        else:
-            positionals.append(arg)
-            i += 1
-    return fmt, positionals
+def build_parser() -> argparse.ArgumentParser:
+    """CLI parser: options anywhere, `hello` verb tolerated (see main)."""
+    parser = argparse.ArgumentParser(
+        prog="agentcrew-hello",
+        description="Greet <text> via the hello-world node.",
+    )
+    parser.add_argument(
+        "positionals",
+        nargs="*",
+        help="optional leading 'hello' verb followed by <text>",
+    )
+    parser.add_argument(
+        "--format",
+        default="text",
+        help="output format: text|json (default: text)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="print the planned output and change nothing",
+    )
+    return parser
+
+
+def _emit_output(result: dict, fmt: str, dry_run: bool) -> None:
+    """Print the node result honoring format and dry-run."""
+    if fmt == "json":
+        payload: dict = {"input": result["input"], "greeting": result["greeting"]}
+        if dry_run:
+            payload["dry_run"] = True
+        print(json.dumps(payload))
+    elif dry_run:
+        print(f"dry-run: {result['greeting']}")
+    else:
+        print(result["greeting"])
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -51,9 +68,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     raw_args = list(sys.argv[1:] if argv is None else argv)
 
     try:
-        fmt, positionals = _parse_format(raw_args)
-    except ValueError as exc:
-        print(f"error: {exc}", file=sys.stderr)
+        args = build_parser().parse_args(raw_args)
+    except SystemExit as exc:
+        # argparse UX (usage errors -> 2, --help -> 0) mapped to CLI codes.
+        return 1 if exc.code != 0 else 0
+    fmt, positionals, dry_run = args.format, list(args.positionals), args.dry_run
+
+    if fmt not in ("text", "json"):
+        print(f"error: --format must be text|json, got {fmt!r}", file=sys.stderr)
         print(_USAGE, file=sys.stderr)
         return 1
 
@@ -78,10 +100,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("error: unexpected failure", file=sys.stderr)
         return 4
 
-    if fmt == "json":
-        print(json.dumps({"input": result["input"], "greeting": result["greeting"]}))
-    else:
-        print(result["greeting"])
+    _emit_output(result, fmt, dry_run)
     return 0
 
 

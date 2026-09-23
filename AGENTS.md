@@ -1,22 +1,24 @@
-# AGENTS.md
+# AGENTS.md — Minimal Harness
 
-Guidance for AI coding agents working in this repository.
+Goal: complete one Task per session with evidence. See `CONTEXT.md` for terms (Task, Verdict, Skill).
 
-## Project
+## Loop
 
-The focus of this project is **agent-to-agent interaction across the software
-development lifecycle**: a swarm of specialized AI role-agents (planner,
-builder, tester, reviewer, security) that collaborate — handing work between
-one another — to turn a natural-language feature request into a reviewed,
-merge-ready pull request.
+1. Read `.factory/tasks/<id>.md` and `docs/workflow.md`.
+2. Inspect repo, tests, patterns before editing.
+3. Implement minimal diff proving each acceptance criterion.
+4. Run `uv run ruff check .` and `uv run pytest`.
+5. Inspect `git diff`; leave tree green. All criteria start FAIL — flip only with proof.
 
-> **Fresh start.** The previous `src/ai_factory` implementation and `specs/`
-> design artifacts were removed. The foundation is being rebuilt around the
-> swarm/interaction vision. This file will grow as the project's conventions
-> are re-established.
+## Rules
 
-## Conventions
+- Prefer existing abstractions; add no dependency without need.
+- Keep changes scoped; repository is the system of record.
+- Claim no success without build + test + diff evidence.
+- Second agent/planner/memory only per `docs/extending.md` (earn via `evals/` benchmark).
 
-- Managed with `uv`; Python ≥ 3.14.
-- Lint: `uv run ruff check .`
-- Test: `uv run pytest`
+## Pointers
+
+- Why minimal: `docs/philosophy.md`, decision in `docs/adr/0001-minimal-harness-over-fixed-swarm.md`.
+- Shape and layout: `docs/architecture.md`.
+- Verdict format and metrics: `docs/evaluation.md`.
