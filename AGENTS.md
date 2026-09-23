@@ -7,7 +7,7 @@ Goal: complete one Task per session with evidence. See `CONTEXT.md` for terms (T
 1. Read `.factory/tasks/<id>.md` and `docs/workflow.md`.
 2. Inspect repo, tests, patterns before editing.
 3. Implement minimal diff proving each acceptance criterion.
-4. Run `uv run ruff check .` and `uv run pytest`.
+4. Run `.\scripts\verify.ps1` (ruff + pytest + complexity gate).
 5. Inspect `git diff`; leave tree green. All criteria start FAIL — flip only with proof.
 
 ## Rules

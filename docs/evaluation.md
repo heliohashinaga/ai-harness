@@ -3,7 +3,7 @@
 ## Order matters: cheap first
 
 1. **Build** — `ruff check`, `pytest`, build per stack. Fail fast.
-2. **Rules** — lint, typecheck, security scan, `git diff --stat` sanity (no unrelated rewrites).
+2. **Rules** — lint, typecheck and security scan when configured (today: ruff only), `git diff --stat` sanity (no unrelated rewrites).
 3. **Acceptance** — each Task criterion mapped to a test or script output.
 4. **LLM judge (optional)** — only for properties no script can check (e.g. "follows existing abstraction"). Fresh context, read-only, receives Task + diff + test results, never the agent's chain-of-thought.
 
@@ -13,11 +13,11 @@
 verdict: FAIL
 evidence:
   build: pass
-  tests: "7/9 pass"
+  tests: "71 passed, 1 failed"
   criteria:
-    - {id: idempotency, status: fail, proof: "concurrent dupes both executed"}
-    - {id: regression, status: pass, proof: "pytest -q green"}
-feedback: "make the key check atomic; see evals/…/repro.py"
+    - {id: dry-run-text, status: pass, proof: "test_cli_dry_run_text_prints_plan green"}
+    - {id: quality-gate, status: fail, proof: "main complexity 12 > budget 10"}
+feedback: "extract output emission into a helper to get under the budget"
 ```
 
 ## Metrics (every run)

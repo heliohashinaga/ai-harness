@@ -17,7 +17,9 @@ Example: `agent + evaluator = 78% vs single = 63% → keep. + planner = 77% → 
 
 ## Skills, not agents
 
-Instead of `security-agent`, add `skills/security/SKILL.md` loaded on demand. Preserves context, no extra hop.
+Instead of `security-agent`, add `skills/security/SKILL.md` loaded on demand
+(no `skills/` dir exists yet — create it when the first skill earns its place).
+Preserves context, no extra hop.
 
 ## AGENTS.md stays tiny
 

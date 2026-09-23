@@ -24,10 +24,12 @@ If acceptance isn't checkable, rewrite the task. That's the job, not more agents
 ## 2. Run
 
 ```powershell
-.\scripts\run.ps1 .factory/tasks/042-slug.md        # agent inspects → edits → tests → commits
+.\scripts\run.ps1 .factory/tasks/042-slug.md        # agent inspects → edits → tests
 .\scripts\verify.ps1                                 # deterministic gate
 .\scripts\evaluate.ps1 .factory/tasks/042-slug.md    # verdict + feedback
 ```
+
+Commit at checkpoints (a task DONE, a decision recorded) — never mid-attempt.
 
 Agent rules (full text in `agents/agent.md`): understand implementation, find tests, follow patterns; then run tests, inspect diff, prove each criterion.
 

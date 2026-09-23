@@ -12,12 +12,14 @@ HUMAN → TASK.md → AGENT SESSION → repository (inspect/edit/test)
 |---|---|---|
 | **Task** | `.factory/tasks/<id>.md` | Goal + Acceptance Criteria + Constraints. See `workflow.md`. |
 | **Agent Session** | `agents/agent.md` + `src/aicrew/` tools | Single model, repo tools (`rg`, `git`, `pytest`, `ruff`). No roles. |
-| **Evaluator** | `agents/evaluator.md` + `scripts/verify` | Build, tests, lint, diff, acceptance checklist. Read-only, fresh context. |
-| **State** | `.factory/state/current.md` + git | Task id, status, last Verdict. Git is the memory. |
+| **Evaluator** | `agents/evaluator.md` + `scripts/verify.ps1` | Build, tests, lint, diff, acceptance checklist. Read-only, fresh context. |
+| **State** | `.factory/state/current.md` (local scratch) + versioned tasks/evaluations | Task id, status, last Verdict. Tasks and Verdicts are the versioned memory; scratch state stays out of git. |
 
 ## What does NOT exist at V1
 
-Coordinator, planner, swarm, message bus, LangGraph pipeline, vector DB, Redis/Postgres, memory server. The current `START → coder → cleaner → END` graph is demoted to an experiment, not the backbone.
+Coordinator, planner, swarm, message bus, vector DB, Redis/Postgres, memory
+server. No LangGraph pipeline as the backbone — the `START → coder → cleaner → END`
+graph survives only as an opt-in experiment (see `evals/results/003-cleaner-pilot.md`).
 
 ## Layout
 

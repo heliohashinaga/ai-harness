@@ -20,10 +20,10 @@ TASK.md → AGENT (inspect → edit → test) → EVALUATOR → PASS / FAIL → 
 uv sync
 
 # Run the hello-world node via the console script.
-uv run agentcrew-hello "world"
+uv run aicrew-hello "world"
 
 # Or in Python.
-uv run python -m agentcrew.cli hello "world"
+uv run python -m aicrew.cli hello "world"
 
 # Deterministic gate (lint + tests + complexity budget).
 .\scripts\verify.ps1
@@ -46,28 +46,28 @@ see [`evals/benchmark.md`](evals/benchmark.md) and [`docs/extending.md`](docs/ex
 
 ## Code-gen CLI (opt-in experiment)
 
-`agentcrew-code` generates code from a task via the coder→cleaner graph. It is
+`aicrew-code` generates code from a task via the coder→cleaner graph. It is
 **not** the architecture — experiment 003 showed the cleaner adds cost without
 measured gain. Requires an LLM provider key in `.env` (see `.env.example`):
 
 ```bash
-uv run agentcrew-code "write a python function that returns the nth fibonacci number"
-uv run agentcrew-code --provider opencode "..." --format json
+uv run aicrew-code "write a python function that returns the nth fibonacci number"
+uv run aicrew-code --provider opencode "..." --format json
 ```
 
 Note: the opencode provider needs its session header (handled in
-`src/agentcrew/nodes/llm.py`); if calls fail with 400/503, check
+`src/aicrew/nodes/llm.py`); if calls fail with 400/503, check
 `evals/results/003-cleaner-pilot.md` for known upstream issues.
 
 ## Observability
 
 Offline per-run metrics (latency, counts, inputs/outputs) come from
-[`MetricsCallbackHandler`](src/agentcrew/telemetry.py) — credential-free, no
+[`MetricsCallbackHandler`](src/aicrew/telemetry.py) — credential-free, no
 network:
 
 ```python
-from agentcrew.nodes.hello_world import build_hello_world_node
-from agentcrew.telemetry import MetricsCallbackHandler
+from aicrew.nodes.hello_world import build_hello_world_node
+from aicrew.telemetry import MetricsCallbackHandler
 
 handler = MetricsCallbackHandler()
 build_hello_world_node().invoke("world", config={"callbacks": [handler]})
