@@ -14,8 +14,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from agentcrew.agents import coder as coder_agents
-from agentcrew.agents import repo as repo_scm
+from aicrew.agents import coder as coder_agents
+from aicrew.agents import repo as repo_scm
 
 Explorer = Callable[[str], str]
 

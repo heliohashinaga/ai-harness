@@ -3,8 +3,8 @@
 import pytest
 from pydantic import ValidationError
 
-from agentcrew.nodes.hello_world import build_hello_world_node
-from agentcrew.nodes.models import HelloWorldNodeResult
+from aicrew.nodes.hello_world import build_hello_world_node
+from aicrew.nodes.models import HelloWorldNodeResult
 
 pytestmark = pytest.mark.unit
 

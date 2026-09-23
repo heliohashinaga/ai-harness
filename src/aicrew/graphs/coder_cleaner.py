@@ -15,9 +15,9 @@ from collections.abc import Callable
 
 from langgraph.graph import END, START, StateGraph
 
-from agentcrew.agents.cleaner import build_cleaner_node
-from agentcrew.agents.coder import build_coder_node
-from agentcrew.nodes.models import TaskState
+from aicrew.agents.cleaner import build_cleaner_node
+from aicrew.agents.coder import build_coder_node
+from aicrew.nodes.models import TaskState
 
 Chat = Callable[[str], str]
 

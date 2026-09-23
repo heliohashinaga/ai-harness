@@ -2,8 +2,8 @@
 
 import pytest
 
-from agentcrew.nodes.hello_world import build_hello_world_node
-from agentcrew.telemetry import MetricsCallbackHandler
+from aicrew.nodes.hello_world import build_hello_world_node
+from aicrew.telemetry import MetricsCallbackHandler
 
 pytestmark = pytest.mark.unit
 

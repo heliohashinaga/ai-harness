@@ -1,6 +1,6 @@
 """Thin CLI composing the coder->cleaner pipeline graph.
 
-Mirrors the ``agentcrew-hello`` / ``agentcrew-llm`` CLI shape: exit codes
+Mirrors the ``aicrew-hello`` / ``aicrew-llm`` CLI shape: exit codes
 ``0`` success, ``1`` usage, ``4`` runtime. It composes the library graph and
 never holds business logic (constitution Principle I).
 """
@@ -11,16 +11,16 @@ import json
 import sys
 from collections.abc import Sequence
 
-from agentcrew.agents import cleaner as cleaner_agents
-from agentcrew.agents import coder as coder_agents
-from agentcrew.agents import repo as repo_scm
-from agentcrew.agents.clean_code_policy import read_clean_code_policy
-from agentcrew.agents.repo_runner import run_repo_pipeline
-from agentcrew.graphs.coder_cleaner import build_coder_cleaner_graph
-from agentcrew.nodes import llm as llm_nodes
+from aicrew.agents import cleaner as cleaner_agents
+from aicrew.agents import coder as coder_agents
+from aicrew.agents import repo as repo_scm
+from aicrew.agents.clean_code_policy import read_clean_code_policy
+from aicrew.agents.repo_runner import run_repo_pipeline
+from aicrew.graphs.coder_cleaner import build_coder_cleaner_graph
+from aicrew.nodes import llm as llm_nodes
 
 _USAGE = (
-    "usage: agentcrew-code [--provider openrouter|opencode] "
+    "usage: aicrew-code [--provider openrouter|opencode] "
     "[--model NAME] [--format text|json] "
     "[--repo <local-path> [--branch NAME] [--file RELPATH]] <task>"
 )

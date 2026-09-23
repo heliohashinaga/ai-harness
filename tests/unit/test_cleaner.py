@@ -1,6 +1,6 @@
 """Unit tests for the cleaner node (stubbed LLM, no network)."""
 
-from agentcrew.agents.cleaner import build_cleaner_node
+from aicrew.agents.cleaner import build_cleaner_node
 
 
 def test_cleaner_applies_semantic_rules_with_stub():
@@ -57,7 +57,7 @@ def test_cleaner_injects_policy_into_prompt():
 
 
 def test_read_policy_strips_frontmatter(tmp_path):
-    from agentcrew.agents.clean_code_policy import read_clean_code_policy
+    from aicrew.agents.clean_code_policy import read_clean_code_policy
 
     f = tmp_path / "SKILL.md"
     f.write_text("---\nname: clean-code\n---\nApply good names.", encoding="utf-8")
@@ -65,7 +65,7 @@ def test_read_policy_strips_frontmatter(tmp_path):
 
 
 def test_bundled_policy_excludes_formatting():
-    from agentcrew.agents.clean_code_policy import CLEAN_CODE_POLICY
+    from aicrew.agents.clean_code_policy import CLEAN_CODE_POLICY
 
     lower = CLEAN_CODE_POLICY.lower()
     assert "descriptive, intent-revealing names" in lower

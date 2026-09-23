@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from agentcrew.agents import repo as scm
+from aicrew.agents import repo as scm
 
 
 def _init_repo(tmp_path: Path) -> Path:

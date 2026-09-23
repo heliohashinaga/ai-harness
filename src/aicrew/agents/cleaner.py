@@ -16,9 +16,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from agentcrew.agents.clean_code_policy import CLEAN_CODE_POLICY
-from agentcrew.nodes.llm import build_llm_node
-from agentcrew.nodes.models import CleanerOutput, TaskState
+from aicrew.agents.clean_code_policy import CLEAN_CODE_POLICY
+from aicrew.nodes.llm import build_llm_node
+from aicrew.nodes.models import CleanerOutput, TaskState
 
 Chat = Callable[[str], str]
 
@@ -35,7 +35,7 @@ _PROMPT_TEMPLATE = (
 def default_chat(provider: str, model: str | None) -> Chat:
     """Build the default semantic-clean-code chat callable (prompt -> text).
 
-    Backed by ``agentcrew.nodes.llm.build_llm_node``. The CLI passes this in for
+    Backed by ``aicrew.nodes.llm.build_llm_node``. The CLI passes this in for
     real refinement; when no chat is configured the cleaner passes code through
     unchanged (offline/graceful).
     """

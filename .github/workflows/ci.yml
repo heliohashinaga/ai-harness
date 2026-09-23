@@ -1,5 +1,4 @@
-# CI for agent-crew (a swarm of AI agents collaborating across the software
-# development lifecycle).
+# CI for aicrew (a minimal agent harness with measured baselines).
 #
 # Runs lint (ruff) plus the offline unit/contract tests with the network guard,
 # plus a heuristic-free quality gate (cyclomatic complexity, runs with the

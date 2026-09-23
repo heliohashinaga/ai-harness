@@ -1,6 +1,6 @@
 """Unit tests for the coder node (stubbed model, no network)."""
 
-from agentcrew.agents.coder import build_coder_node
+from aicrew.agents.coder import build_coder_node
 
 
 def _node():
@@ -28,7 +28,7 @@ def test_generate_code_passes_context():
         seen.append(prompt)
         return "code"
 
-    from agentcrew.agents.coder import generate_code
+    from aicrew.agents.coder import generate_code
 
     generate_code("task", spy, context="CUSTOM-CONTEXT")
     assert seen and "CUSTOM-CONTEXT" in seen[0]

@@ -10,7 +10,7 @@ import sys
 
 import pytest
 
-from agentcrew import cli
+from aicrew import cli
 
 pytestmark = pytest.mark.contract
 
@@ -86,9 +86,9 @@ def test_cli_dry_run_json_marks_payload(capsys):
 
 
 def test_console_module_smoke_end_to_end():
-    """Run the real `python -m agentcrew.cli` entry point end-to-end."""
+    """Run the real `python -m aicrew.cli` entry point end-to-end."""
     result = subprocess.run(
-        [sys.executable, "-m", "agentcrew.cli", "hello", "world"],
+        [sys.executable, "-m", "aicrew.cli", "hello", "world"],
         capture_output=True,
         text=True,
         check=False,

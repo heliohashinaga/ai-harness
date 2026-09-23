@@ -8,10 +8,10 @@ import os
 
 import pytest
 
-from agentcrew.agents import cleaner as cleaner_agents
-from agentcrew.agents import coder as coder_agents
-from agentcrew.graphs.coder_cleaner import build_coder_cleaner_graph
-from agentcrew.nodes import llm as llm_nodes
+from aicrew.agents import cleaner as cleaner_agents
+from aicrew.agents import coder as coder_agents
+from aicrew.graphs.coder_cleaner import build_coder_cleaner_graph
+from aicrew.nodes import llm as llm_nodes
 
 pytestmark = pytest.mark.integration
 

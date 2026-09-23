@@ -13,11 +13,11 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
-from agentcrew.agents import cleaner as cleaner_agents
-from agentcrew.agents import coder as coder_agents
-from agentcrew.agents import repo as repo_scm
-from agentcrew.agents.clean_code_policy import read_clean_code_policy
-from agentcrew.agents.explorer import build_explorer_coder
+from aicrew.agents import cleaner as cleaner_agents
+from aicrew.agents import coder as coder_agents
+from aicrew.agents import repo as repo_scm
+from aicrew.agents.clean_code_policy import read_clean_code_policy
+from aicrew.agents.explorer import build_explorer_coder
 
 Chat = Callable[[str], str]
 
@@ -102,7 +102,7 @@ def run_repo_pipeline(
     branch_a = f"agent/coder-{ts}"
     branch_b = f"agent/cleaner-{ts}"
 
-    worktrees_root = base_dir or Path(tempfile.mkdtemp(prefix="agentcrew-repo-"))
+    worktrees_root = base_dir or Path(tempfile.mkdtemp(prefix="aicrew-repo-"))
     worktree_a = worktrees_root / f"coder-{ts}"
     worktree_b = worktrees_root / f"cleaner-{ts}"
 

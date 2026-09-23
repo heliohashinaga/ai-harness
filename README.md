@@ -1,4 +1,4 @@
-# agent-crew
+# aicrew
 
 > A minimal agent harness for software development — with measured baselines.
 
