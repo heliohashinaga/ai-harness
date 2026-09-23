@@ -1,13 +1,17 @@
 # agent-crew
 
-> A swarm of AI agents collaborating across the software development lifecycle.
+> A minimal agent harness for software development — with measured baselines.
 
 [![CI](https://github.com/heliohashinaga/agent-crew/actions/workflows/ci.yml/badge.svg)](https://github.com/heliohashinaga/agent-crew/actions/workflows/ci.yml)
 
-This repository focuses on **agent-to-agent interaction in the software
-development cycle**: specialized AI agents that hand work between one another —
-planning, building, testing, reviewing and securing a change — instead of a
-single model doing a single pass.
+One agent session per task, verified by evidence, extended only on measured
+gain. No coordinator, no swarm, no orchestration for its own sake — see
+[`docs/philosophy.md`](docs/philosophy.md) and
+[`docs/adr/0001-minimal-harness-over-fixed-swarm.md`](docs/adr/0001-minimal-harness-over-fixed-swarm.md).
+
+```text
+TASK.md → AGENT (inspect → edit → test) → EVALUATOR → PASS / FAIL → retry (max 3)
+```
 
 ## Getting started
 
@@ -21,27 +25,39 @@ uv run agentcrew-hello "world"
 # Or in Python.
 uv run python -m agentcrew.cli hello "world"
 
-# Lint + tests.
-uv run ruff check .
-uv run pytest
+# Deterministic gate (lint + tests + complexity budget).
+.\scripts\verify.ps1
 ```
 
-## Coder → Cleaner pipeline
+Work a task per [`docs/workflow.md`](docs/workflow.md):
+`.\scripts\run.ps1` → implement → `.\scripts\verify.ps1` →
+`.\scripts\evaluate.ps1`. Terms in [`CONTEXT.md`](CONTEXT.md).
 
-The first multi-node agent handoff: a **coder** agent writes code from a task
-and a **cleaner** agent applies semantic clean code (descriptive naming, small
-functions, removing redundant comments). It is **language-agnostic** (any
-language the task requests). Requires an LLM provider key in your local `.env`
-(see `.env.example`).
+## Evidence, not claims
+
+| Experiment | Result |
+|---|---|
+| `evals/results/001-baseline.md` | gate green: ruff clean, 72 passed |
+| `evals/results/002-baseline-agent-runs.md` | 4/4 tasks, first-attempt 50%, retries solved by deterministic feedback |
+| `evals/results/003-cleaner-pilot.md` | cleaner **rejected** as default: 3/3 vs 3/3 at 2x calls, 3–25x latency |
+
+New layers (planner, reviewer, swarm) enter only by beating these numbers —
+see [`evals/benchmark.md`](evals/benchmark.md) and [`docs/extending.md`](docs/extending.md).
+
+## Code-gen CLI (opt-in experiment)
+
+`agentcrew-code` generates code from a task via the coder→cleaner graph. It is
+**not** the architecture — experiment 003 showed the cleaner adds cost without
+measured gain. Requires an LLM provider key in `.env` (see `.env.example`):
 
 ```bash
 uv run agentcrew-code "write a python function that returns the nth fibonacci number"
-uv run agentcrew-code --provider opencode "export a React form component that validates email"
-uv run agentcrew-code "..." --format json
+uv run agentcrew-code --provider opencode "..." --format json
 ```
 
-Formatting stays with Black/ruff (the cleaner is **not** responsible for
-formatting) — see [`specs/002-coder-cleaner/`](specs/002-coder-cleaner/spec.md).
+Note: the opencode provider needs its session header (handled in
+`src/agentcrew/nodes/llm.py`); if calls fail with 400/503, check
+`evals/results/003-cleaner-pilot.md` for known upstream issues.
 
 ## Observability
 
