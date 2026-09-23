@@ -1,0 +1,13 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "82 passed, 2 deselected (72 pre-existing + 10 new); zero regressions"
+  criteria:
+    - {id: protocol-frozen, status: pass, proof: "evals/004-protocol.md defines 6 triples (B1-B6), hidden tests verbatim from 003, each with documented failing check"}
+    - {id: buggy-proven, status: pass, proof: "tests/unit/test_buggy_cases_004.py execs each frozen sample; all 6 fail their documented check"}
+    - {id: satisfiable, status: pass, proof: "reference solutions pass all 3 hidden-test sets fully"}
+    - {id: gate, status: pass, proof: "ruff + pytest green via direct .venv run; verify.ps1 pytest step blocked by pre-existing uv trampoline env issue (identical on pristine tree)"}
+feedback: "none — done first attempt"
+attempts: 1
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session. 003 hidden tests reused verbatim; no LLM in the loop."
