@@ -50,9 +50,10 @@ def default_chat(provider: str, model: str | None) -> Chat:
 def clean_code_text(code: str, chat: Chat, policy: str = CLEAN_CODE_POLICY) -> str:
     """Return ``code`` cleaned by ``chat`` per ``policy``; fail-safe to input."""
     try:
-        return chat(_PROMPT_TEMPLATE.format(policy=policy, code=code))
+        refined = chat(_PROMPT_TEMPLATE.format(policy=policy, code=code))
     except Exception:  # noqa: BLE001 - graceful fallback per spec
         return code
+    return refined if isinstance(refined, str) else code
 
 
 def build_cleaner_node(

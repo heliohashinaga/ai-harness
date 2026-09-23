@@ -1,0 +1,12 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "85 passed, 2 deselected via ./scripts/verify.ps1 (exit 0); ambos os testes novos falharam antes do fix (red) e passam depois (green)"
+  criteria:
+    - {id: coder-lazy, status: pass, proof: "build sem chat constrói keyless (OpenAIError antes no coder.py:68); invoke sem chave falha com 'credentials' — teste prova ambos"}
+    - {id: cleaner-nonstr, status: pass, proof: "chat retornando None devolve entrada inalterada (ValidationError antes no CleanerOutput) — teste prova"}
+    - {id: gate, status: pass, proof: "./scripts/verify.ps1 exit 0, 85 passed"}
+feedback: "none — done first attempt"
+attempts: 1
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session. 4 arquivos, +26/-4. default_chat preservado (CLI/runners usam direto)."

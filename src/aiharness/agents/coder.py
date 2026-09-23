@@ -63,14 +63,16 @@ def build_coder_node(
     provider: str = "openrouter",
     model: str | None = None,
 ) -> Callable[[TaskState], dict[str, str]]:
-    """Return a LangGraph node that fills ``coder_output`` from ``task``."""
+    """Return a LangGraph node that fills ``coder_output`` from ``task``.
 
-    effective = chat if chat is not None else default_chat(provider, model)
+    The chat client is resolved at invoke time, so building the node never
+    requires credentials (the failure without keys surfaces on invoke)."""
 
     def coder_node(state: TaskState) -> dict[str, str]:
         task = state["task"]
         # Validate input (raises ValueError on blank task).
         CoderOutput(task=task, model=model or provider, code="")
+        effective = chat if chat is not None else default_chat(provider, model)
         code = generate_code(task, effective)
         return {"coder_output": code}
 

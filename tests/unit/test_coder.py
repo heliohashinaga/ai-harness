@@ -1,5 +1,7 @@
 """Unit tests for the coder node (stubbed model, no network)."""
 
+import pytest
+
 from aiharness.agents.coder import build_coder_node
 
 
@@ -48,3 +50,13 @@ def test_coder_returns_partial_update_only():
     out = node({"task": "x", "coder_output": "", "cleaner_output": "", "error": None})
     # Node returns only the key it changes.
     assert set(out.keys()) == {"coder_output"}
+
+
+def test_coder_builds_offline_and_fails_only_on_invoke(monkeypatch):
+    for var in ("OPENROUTER_API_KEY", "OPENCODE_GO_API_KEY", "OPENAI_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    # No chat configured: building the node must not require credentials;
+    # the coder has no pass-through mode, so invoking fails instead.
+    node = build_coder_node(model="stub")
+    with pytest.raises(Exception, match="credentials"):
+        node({"task": "x", "coder_output": "", "cleaner_output": "", "error": None})

@@ -67,6 +67,13 @@ def test_cleaner_injects_policy_into_prompt():
     assert "CUSTOM-POLICY" in prompts[0]
 
 
+def test_cleaner_falls_back_when_chat_returns_non_string():
+    node = build_cleaner_node(chat=lambda _p: None, model="stub")
+    code = "def f():\n    pass"
+    out = node({"task": "x", "coder_output": code, "cleaner_output": "", "error": None})
+    assert out["cleaner_output"] == code
+
+
 def test_read_policy_strips_frontmatter(tmp_path):
     from aiharness.agents.clean_code_policy import read_clean_code_policy
 
