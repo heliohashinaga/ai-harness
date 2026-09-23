@@ -5,4 +5,6 @@
 #>
 $ErrorActionPreference = "Stop"
 uv run ruff check .
-uv run pytest -q
+# Module invocation: bypasses .venv console-script shims (a corrupt
+# pytest.exe trampoline once broke `uv run pytest` with no repo change).
+uv run python -m pytest -q

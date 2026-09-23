@@ -1,0 +1,12 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "83 passed, 2 deselected via ./scripts/verify.ps1 itself (exit 0)"
+  criteria:
+    - {id: gate-green, status: pass, proof: "./scripts/verify.ps1 exit 0 end-to-end, first time without caveats"}
+    - {id: shim-independent, status: pass, proof: "pytest.exe renamed away -> verify still exit 0; shim restored intact afterwards"}
+    - {id: minimal, status: pass, proof: "1 file, +3/-1; ruff step untouched; no new dependency"}
+feedback: "none — done first attempt"
+attempts: 1
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session. Root cause was a corrupt local shim (fixed by reinstall); repo fix removes the dependency class."
