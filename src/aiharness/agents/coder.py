@@ -11,8 +11,7 @@ from __future__ import annotations
 from aiharness.nodes.llm import build_llm_node
 from aiharness.nodes.models import Chat, CoderOutput, TaskState
 
-# Language-agnostic: the task itself names the desired language; the prompt does
-# not assume one.
+# No language clause: the task names it when it matters.
 _PROMPT = (
     "You are a coding agent. Write candidate code for the task below. "
     "Return ONLY raw code.\n\n"
@@ -35,7 +34,7 @@ def default_chat(provider: str, model: str | None) -> Chat:
 
 
 def generate_code(task: str, chat: Chat, context: str = "") -> str:
-    """Return code content for ``task`` (language-agnostic)."""
+    """Return code content for ``task``."""
     return chat(build_coder_prompt(task, context))
 
 
