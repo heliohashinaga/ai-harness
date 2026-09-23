@@ -1,6 +1,6 @@
 """Thin CLI that composes the LLM-backed node.
 
-Mirrors the ``aicrew-hello`` CLI shape (same exit codes: 0 success, 1 usage,
+Mirrors the ``aiharness-hello`` CLI shape (same exit codes: 0 success, 1 usage,
 4 unexpected failure), but calls the networked LLM node. Requires an API key for
 the chosen provider (``OPENROUTER_API_KEY`` for ``openrouter``,
 ``OPENCODE_GO_API_KEY`` for ``opencode``) via the local ``.env`` / environment.
@@ -12,11 +12,11 @@ import json
 import sys
 from collections.abc import Sequence
 
-from aicrew.nodes import llm as llm_nodes
-from aicrew.nodes.llm import build_llm_node
+from aiharness.nodes import llm as llm_nodes
+from aiharness.nodes.llm import build_llm_node
 
 _USAGE = (
-    "usage: aicrew-llm [--provider openrouter|opencode] "
+    "usage: aiharness-llm [--provider openrouter|opencode] "
     "[--model NAME] [--format text|json] <text>"
 )
 

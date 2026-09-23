@@ -1,6 +1,6 @@
 """Unit tests for the repo-explorer coder's auto-discovery (offline)."""
 
-from aicrew.agents.explorer import _auto_discover, _gather_context
+from aiharness.agents.explorer import _auto_discover, _gather_context
 
 
 def _files(tmp_path):

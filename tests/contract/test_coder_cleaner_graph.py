@@ -2,7 +2,7 @@
 
 import pytest
 
-from aicrew.graphs.coder_cleaner import build_coder_cleaner_graph
+from aiharness.graphs.coder_cleaner import build_coder_cleaner_graph
 
 pytestmark = pytest.mark.contract
 

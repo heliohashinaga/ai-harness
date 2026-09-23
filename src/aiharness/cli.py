@@ -1,4 +1,4 @@
-"""Thin CLI that composes the aicrew hello-world node.
+"""Thin CLI that composes the aiharness hello-world node.
 
 The CLI holds no business logic — it parses arguments, delegates to the library
 node, formats output (human-readable or JSON), and maps results to exit codes.
@@ -13,9 +13,9 @@ from collections.abc import Sequence
 
 from dotenv import load_dotenv
 
-from aicrew.nodes.hello_world import build_hello_world_node
+from aiharness.nodes.hello_world import build_hello_world_node
 
-_USAGE = "usage: aicrew-hello [hello] <text> [--format text|json] [--dry-run]"
+_USAGE = "usage: aiharness-hello [hello] <text> [--format text|json] [--dry-run]"
 
 # Load optional LANGSMITH_* (and other) vars from a local .env if present.
 # Does not override already-set environment variables. Runs before any
@@ -26,7 +26,7 @@ load_dotenv()
 def build_parser() -> argparse.ArgumentParser:
     """CLI parser: options anywhere, `hello` verb tolerated (see main)."""
     parser = argparse.ArgumentParser(
-        prog="aicrew-hello",
+        prog="aiharness-hello",
         description="Greet <text> via the hello-world node.",
     )
     parser.add_argument(

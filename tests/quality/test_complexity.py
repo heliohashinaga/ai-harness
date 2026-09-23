@@ -17,7 +17,7 @@ pytestmark = pytest.mark.quality
 # require a refactor, not just a raised limit.
 MAX_COMPLEXITY = 10
 
-SRC = Path(__file__).resolve().parents[2] / "src" / "aicrew"
+SRC = Path(__file__).resolve().parents[2] / "src" / "aiharness"
 
 
 def _complexity_scores() -> dict[tuple[str, str], int]:
@@ -31,7 +31,7 @@ def _complexity_scores() -> dict[tuple[str, str], int]:
 
 def test_max_cyclomatic_complexity():
     scores = _complexity_scores()
-    assert scores, "no source files found to measure under src/aicrew/"
+    assert scores, "no source files found to measure under src/aiharness/"
     (path, name), value = max(scores.items(), key=lambda item: item[1])
     assert value <= MAX_COMPLEXITY, (
         f"{path}::{name} has cyclomatic complexity {value}, exceeding the "

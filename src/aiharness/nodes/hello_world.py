@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import Runnable, RunnableLambda
 
-from aicrew.nodes.models import HelloWorldNodeResult
+from aiharness.nodes.models import HelloWorldNodeResult
 
 
 def _greet(raw_text: str) -> dict[str, str]:

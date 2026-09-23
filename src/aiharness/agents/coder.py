@@ -3,15 +3,15 @@
 The node is a plain LangGraph node function: it receives the shared ``TaskState``
 and returns a partial update setting ``coder_output``. The underlying chat is
 injectable (``chat=...``) so tests can stub it without network; by default it is
-built from the existing ``aicrew.nodes.llm`` provider infra.
+built from the existing ``aiharness.nodes.llm`` provider infra.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
 
-from aicrew.nodes.llm import build_llm_node
-from aicrew.nodes.models import CoderOutput, TaskState
+from aiharness.nodes.llm import build_llm_node
+from aiharness.nodes.models import CoderOutput, TaskState
 
 Chat = Callable[[str], str]
 
@@ -27,7 +27,7 @@ _PROMPT = (
 def default_chat(provider: str, model: str | None) -> Chat:
     """Build the default chat callable (prompt -> code/response text).
 
-    Backed by ``aicrew.nodes.llm.build_llm_node`` (OpenRouter/OpenCode Go).
+    Backed by ``aiharness.nodes.llm.build_llm_node`` (OpenRouter/OpenCode Go).
     Used by the CLI for real runs; tests inject stubs instead.
     """
     node = build_llm_node(provider, model=model)

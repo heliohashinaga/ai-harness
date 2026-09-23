@@ -1,4 +1,4 @@
-"""Structured data model for aicrew nodes."""
+"""Structured data model for aiharness nodes."""
 
 from typing import TypedDict
 

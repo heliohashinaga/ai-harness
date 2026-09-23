@@ -2,8 +2,8 @@
 
 import subprocess
 
-from aicrew.agents import repo as scm
-from aicrew.agents.repo_runner import run_repo_pipeline
+from aiharness.agents import repo as scm
+from aiharness.agents.repo_runner import run_repo_pipeline
 
 
 def _init_repo(tmp_path):

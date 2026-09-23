@@ -1,11 +1,11 @@
-"""Contract tests for the aicrew-code CLI (graph mocked, no network)."""
+"""Contract tests for the aiharness-code CLI (graph mocked, no network)."""
 
 import json
 
 import pytest
 
-from aicrew import coder_cli
-from aicrew.nodes import llm as llm_nodes
+from aiharness import coder_cli
+from aiharness.nodes import llm as llm_nodes
 
 pytestmark = pytest.mark.contract
 

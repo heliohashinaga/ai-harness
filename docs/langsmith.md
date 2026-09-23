@@ -1,4 +1,4 @@
-# LangSmith: observability for aicrew
+# LangSmith: observability for ai-harness
 
 [LangSmith](https://smith.langchain.com) is LangChain's hosted tracing and
 observability platform: traces, latency, token usage, cost, and model/hyperparam
@@ -11,7 +11,7 @@ no secrets). Use it only when you explicitly want observability for debugging,
 benchmarking, or production monitoring — and never commit the key.
 
 > For credential-free, offline metrics (latency, counts, inputs/outputs per
-> run), prefer the built-in [`MetricsCallbackHandler`](../src/aicrew/telemetry.py)
+> run), prefer the built-in [`MetricsCallbackHandler`](../src/aiharness/telemetry.py)
 > — no LangSmith needed.
 
 ## 1. Prerequisites
@@ -35,7 +35,7 @@ If you are not using a `.env` loader, export the variables directly:
 ```bash
 export LANGSMITH_TRACING=true
 export LANGSMITH_API_KEY=lsv2_xxxxxxxxxxxxx
-export LANGSMITH_PROJECT=aicrew
+export LANGSMITH_PROJECT=aiharness
 ```
 
 The three variables:
@@ -51,7 +51,7 @@ The three variables:
 LangChain auto-instruments when the env vars are set — **no code changes needed**.
 
 ```bash
-uv run python -m aicrew.cli hello "world"
+uv run python -m aiharness.cli hello "world"
 ```
 
 Each run is captured as a trace. Open **smith.langchain.com → your project** to
@@ -63,8 +63,8 @@ usage and cost.
 The offline handler works alongside tracing and is independent of it:
 
 ```python
-from aicrew.nodes.hello_world import build_hello_world_node
-from aicrew.telemetry import MetricsCallbackHandler
+from aiharness.nodes.hello_world import build_hello_world_node
+from aiharness.telemetry import MetricsCallbackHandler
 
 handler = MetricsCallbackHandler()
 node = build_hello_world_node()

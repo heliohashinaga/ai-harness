@@ -13,8 +13,8 @@ import sys
 
 import pytest
 
-from aicrew import llm_cli
-from aicrew.nodes import llm as llm_nodes
+from aiharness import llm_cli
+from aiharness.nodes import llm as llm_nodes
 
 pytestmark = pytest.mark.contract
 
@@ -88,7 +88,7 @@ def test_cli_runtime_failure_exit_four(monkeypatch, capsys, fake_key):
 def test_console_module_smoke_end_to_end_missing_key():
     """Real entry point: without a key it should exit 4 with a clear hint."""
     result = subprocess.run(
-        [sys.executable, "-m", "aicrew.llm_cli", "hello"],
+        [sys.executable, "-m", "aiharness.llm_cli", "hello"],
         capture_output=True,
         text=True,
         check=False,

@@ -14,9 +14,9 @@ import time
 
 os.environ["LANGSMITH_TRACING"] = "false"
 
-from aicrew.agents.cleaner import default_chat as cleaner_default_chat  # noqa: E402
-from aicrew.agents.coder import default_chat as coder_default_chat  # noqa: E402
-from aicrew.graphs.coder_cleaner import build_coder_cleaner_graph  # noqa: E402
+from aiharness.agents.cleaner import default_chat as cleaner_default_chat  # noqa: E402
+from aiharness.agents.coder import default_chat as coder_default_chat  # noqa: E402
+from aiharness.graphs.coder_cleaner import build_coder_cleaner_graph  # noqa: E402
 
 MODEL = "deepseek-v4-flash"
 PROVIDER = "opencode"

@@ -1,6 +1,6 @@
 """LLM-backed node: calls an OpenAI-compatible chat API (OpenRouter / OpenCode Go).
 
-This is the first *networked* node in aicrew. It is a LangChain ``Runnable``
+This is the first *networked* node in aiharness. It is a LangChain ``Runnable``
 just like ``hello_world`` (same ``invoke``/``stream`` semantics), but it reaches
 out to a hosted OpenAI-compatible chat endpoint. It requires an API key for the
 chosen provider and network access. It is intentionally *not* imported by the
@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_openai import ChatOpenAI
 
-from aicrew.nodes.models import LLMNodeResult
+from aiharness.nodes.models import LLMNodeResult
 
 # Make OPENROUTER_API_KEY / OPENCODE_GO_API_KEY (and other vars) from a local
 # .env take effect regardless of entry point (CLI or direct import). Doesn't
