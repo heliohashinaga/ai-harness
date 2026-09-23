@@ -66,17 +66,17 @@ def build_cleaner_node(
 
     ``chat=None`` means no LLM is configured -> code passes through unchanged.
     ``policy`` is the semantic clean-code standards text injected into the prompt
-    (default: the bundled clean-code skill policy).
+    (default: the bundled clean-code skill policy). ``provider``/``model`` are
+    kept for seam compatibility with the graph builder; no client is built
+    here, so offline builds never require credentials.
     """
-
-    effective = chat if chat is not None else default_chat(provider, model)
 
     def cleaner_node(state: TaskState) -> dict[str, str]:
         code = state["coder_output"]
         refined = code
         applied = False
         if chat is not None:  # only attempt LLM when explicitly configured
-            refined = clean_code_text(code, effective, policy)
+            refined = clean_code_text(code, chat, policy)
             applied = refined != code
         CleanerOutput(code=code, refined=refined, llm_refine_applied=applied)
         return {"cleaner_output": refined}

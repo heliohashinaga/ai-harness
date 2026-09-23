@@ -35,6 +35,17 @@ def test_cleaner_without_llm_returns_code_unchanged():
     assert out["cleaner_output"] == code
 
 
+def test_cleaner_builds_offline_without_credentials(monkeypatch):
+    for var in ("OPENROUTER_API_KEY", "OPENCODE_GO_API_KEY", "OPENAI_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    # No chat configured: building the node must not construct any LLM
+    # client (pass-through is the documented offline contract).
+    node = build_cleaner_node(model="stub")
+    code = "def f():\n    pass"
+    out = node({"task": "x", "coder_output": code, "cleaner_output": "", "error": None})
+    assert out["cleaner_output"] == code
+
+
 def test_cleaner_returns_partial_update_only():
     node = build_cleaner_node(chat=lambda _p: "cleaned", model="stub")
     state = {"task": "x", "coder_output": "code", "cleaner_output": "", "error": None}
