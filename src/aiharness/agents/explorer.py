@@ -11,13 +11,13 @@ tool-calling. Mirrors SwarmForge's coder living in its worktree, but robustly.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from pathlib import Path
 
 from aiharness.agents import coder as coder_agents
 from aiharness.agents import repo as repo_scm
+from aiharness.nodes.models import Chat
 
-Explorer = Callable[[str], str]
+Explorer = Chat
 
 # Source-ish files worth including in auto-discovery.
 _SOURCE_EXT = {".cs", ".py", ".ts", ".js", ".tsx", ".jsx", ".go", ".rs", ".java", ".kt"}
@@ -27,7 +27,7 @@ _CONTEXT_CAP = 9000         # max total context chars fed to the model
 
 def _source_siblings(root: Path, target_dir: str, target_name: str) -> list[str]:
     """Direct sibling source files of the target, up to a cap (no trailing dirs)."""
-    base = root / target_dir if target_dir else root
+    base = (root / target_dir) if target_dir else root
     try:
         entries = sorted(base.iterdir())
     except OSError:
@@ -94,9 +94,11 @@ def build_explorer_coder(
 ) -> Explorer:
     """Return ``(task) -> code``: the coder generates after exploring the repo."""
     root = Path(root)
-    chat = coder_agents.default_chat(provider, model)
 
     def run(task: str) -> str:
+        # Lazy like the coder node: building never needs credentials,
+        # and llm._cached_chat keeps per-call builds cheap.
+        chat = coder_agents.default_chat(provider, model)
         context = _gather_context(root, target_file, context_files)
         return coder_agents.generate_code(task, chat, context)
 

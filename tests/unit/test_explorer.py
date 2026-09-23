@@ -1,6 +1,12 @@
 """Unit tests for the repo-explorer coder's auto-discovery (offline)."""
 
-from aiharness.agents.explorer import _auto_discover, _gather_context
+import pytest
+
+from aiharness.agents.explorer import (
+    _auto_discover,
+    _gather_context,
+    build_explorer_coder,
+)
 
 
 def _files(tmp_path):
@@ -47,3 +53,14 @@ def test_gather_context_combines_explicit_and_auto(tmp_path):
 def test_gather_context_skips_missing_files(tmp_path):
     ctx = _gather_context(tmp_path, "new.cs", context_files=["missing.cs"])
     assert "### missing.cs" not in ctx
+
+
+def test_explorer_builds_offline_and_fails_only_on_invoke(
+    tmp_path, monkeypatch
+):
+    for var in ("OPENROUTER_API_KEY", "OPENCODE_GO_API_KEY", "OPENAI_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    # Like the coder node: no credentials needed to build, only to invoke.
+    run = build_explorer_coder(tmp_path, target_file="new.cs")
+    with pytest.raises(Exception, match="credentials"):
+        run("write a test")
