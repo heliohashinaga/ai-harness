@@ -43,6 +43,11 @@ package = true
 [tool.setuptools.packages.find]
 where = ["src"]
 
+# Skills ship inside the wheel: one source of truth, no per-skill fallback.
+# The glob covers future skills — adding one needs no packaging change.
+[tool.setuptools.package-data]
+"aiharness.skills" = ["*/SKILL.md"]
+
 [tool.ruff]
 target-version = "py314"
 line-length = 88

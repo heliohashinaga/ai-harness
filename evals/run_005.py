@@ -7,9 +7,8 @@ node with provider chats. Writes the measured record plus the verdict to
 
 Offline parts (extraction, exec, hidden tests, ruff) are deterministic;
 LLM calls are not — this is a pilot (N=3, one run each), not a significance
-test. Skill text comes from the project file when present
-(``skills/clean-code/SKILL.md`` via ``read_clean_code_policy()``), else the
-bundled ``CLEAN_CODE_POLICY`` constant.
+test. Skill text comes from the packaged skill
+(``src/aiharness/skills/clean-code/SKILL.md`` via ``read_skill()``).
 """
 
 from __future__ import annotations
@@ -19,14 +18,13 @@ import re
 import subprocess
 import tempfile
 import time
-from pathlib import Path
 
 os.environ["LANGSMITH_TRACING"] = "false"
 
-from aiharness.agents.clean_code_policy import read_clean_code_policy  # noqa: E402
 from aiharness.agents.coder import build_coder_node  # noqa: E402
 from aiharness.agents.coder import default_chat as coder_default_chat  # noqa: E402
 from aiharness.nodes import llm as llm_nodes  # noqa: E402
+from aiharness.skills import read_skill  # noqa: E402
 
 MODEL = "deepseek-v4-flash"
 PROVIDER = "opencode"
@@ -151,10 +149,8 @@ def main() -> None:
         )
     else:
         try:
-            skill_text = read_clean_code_policy()
-            skill_src = "skills/clean-code/SKILL.md" if (
-                Path("skills/clean-code/SKILL.md").is_file()
-            ) else "bundled CLEAN_CODE_POLICY"
+            skill_text = read_skill("clean-code")
+            skill_src = "aiharness/skills/clean-code/SKILL.md (packaged)"
         except Exception as exc:  # noqa: BLE001 - record, never fake
             lines.append(f"ERROR loading skill: {type(exc).__name__}: {exc}")
             skill_text = ""

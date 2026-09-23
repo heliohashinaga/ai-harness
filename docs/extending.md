@@ -17,8 +17,9 @@ Example: `agent + evaluator = 78% vs single = 63% → keep. + planner = 77% → 
 
 ## Skills, not agents
 
-Instead of `security-agent`, add `skills/security/SKILL.md` loaded on demand
-(no `skills/` dir exists yet — create it when the first skill earns its place).
+Instead of `security-agent`, add `src/aiharness/skills/security/SKILL.md`
+loaded on demand via `read_skill("security")`. Skills live inside the
+package so they ship in the wheel (single source, no fallback per skill).
 Preserves context, no extra hop.
 
 ## AGENTS.md stays tiny
