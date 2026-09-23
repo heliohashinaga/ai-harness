@@ -11,14 +11,12 @@ from __future__ import annotations
 
 import tempfile
 import time
-from collections.abc import Callable
 from pathlib import Path
 
 from aiharness.agents import coder as coder_agents
 from aiharness.agents import repo as repo_scm
 from aiharness.agents.explorer import build_explorer_coder
-
-Chat = Callable[[str], str]
+from aiharness.nodes.models import Chat
 
 
 def _read_context(

@@ -1,8 +1,12 @@
 """Structured data model for aiharness nodes."""
 
+from collections.abc import Callable
 from typing import TypedDict
 
 from pydantic import BaseModel, Field, field_validator
+
+Chat = Callable[[str], str]
+"""Injectable LLM chat callable (prompt -> text); tests stub it."""
 
 
 class HelloWorldNodeResult(BaseModel):

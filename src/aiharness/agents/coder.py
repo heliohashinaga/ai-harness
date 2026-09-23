@@ -8,12 +8,8 @@ built from the existing ``aiharness.nodes.llm`` provider infra.
 
 from __future__ import annotations
 
-from collections.abc import Callable
-
 from aiharness.nodes.llm import build_llm_node
-from aiharness.nodes.models import CoderOutput, TaskState
-
-Chat = Callable[[str], str]
+from aiharness.nodes.models import Chat, CoderOutput, TaskState
 
 # Language-agnostic: the task itself names the desired language; the prompt does
 # not assume one.
@@ -48,11 +44,9 @@ def build_coder_prompt(task: str, context: str = "") -> str:
     prompt = _PROMPT.format(task=task)
     if context:
         prompt = (
-            prompt
-            + "\n\nReference files from the repository — use them to match the "
-            "existing style, structure, and fixtures:\n```\n"
-            + context
-            + "\n```"
+            f"{prompt}\n\nReference files from the repository — use them "
+            "to match the existing style, structure, and fixtures:\n```\n"
+            f"{context}\n```"
         )
     return prompt
 

@@ -25,11 +25,13 @@ reformat or change behavior):
 - Remove redundant comments, commented-out blocks, and dead code.
 - If in doubt, prefer the smaller, safer change."""
 
+_ROOT = Path(__file__).resolve().parents[3]
+
 # Candidate SKILL.md locations (project then user) so the live skill file is
 # honored when present; otherwise the constant above is used.
 _SKILL_CANDIDATES = (
-    Path(__file__).resolve().parents[3] / "skills" / "clean-code" / "SKILL.md",
-    Path(__file__).resolve().parents[3] / ".pi" / "skills" / "clean-code" / "SKILL.md",
+    _ROOT / "skills" / "clean-code" / "SKILL.md",
+    _ROOT / ".pi" / "skills" / "clean-code" / "SKILL.md",
     Path.home() / ".pi" / "agent" / "skills" / "clean-code" / "SKILL.md",
 )
 
