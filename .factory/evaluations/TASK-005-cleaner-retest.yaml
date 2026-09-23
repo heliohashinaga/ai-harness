@@ -1,0 +1,12 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "82 passed, 2 deselected — unchanged (experiment adds no library code)"
+  criteria:
+    - {id: runner, status: pass, proof: "evals/run_004.py calls the real cleaner node once per frozen sample via build_cleaner_node + opencode/deepseek-v4-flash chat; TRIPLES imported from the unit test (no third copy); missing key degrades to ERROR, never a fake verdict"}
+    - {id: results, status: pass, proof: "evals/results/004-cleaner-retest.md: 0/6 fixed, 2 regressions (both B2), latencies 23-113s; pre-registered rule applied -> 003 verdict STANDS"}
+    - {id: gate, status: pass, proof: "ruff + pytest green via direct .venv run (uv trampoline env issue pre-existing, unrelated)"}
+feedback: "none — done first attempt"
+attempts: 1
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session. Experiment outcome (0/6 fixed, cleaner rewrote all 6 outputs without fixing) is a result, not a task failure — the protocol's rule decided it."
