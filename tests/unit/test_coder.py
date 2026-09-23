@@ -47,7 +47,7 @@ def test_coder_rejects_blank_task():
 
 def test_coder_returns_partial_update_only():
     node = _node()
-    out = node({"task": "x", "coder_output": "", "cleaner_output": "", "error": None})
+    out = node({"task": "x", "coder_output": "", "error": None})
     # Node returns only the key it changes.
     assert set(out.keys()) == {"coder_output"}
 
@@ -59,4 +59,4 @@ def test_coder_builds_offline_and_fails_only_on_invoke(monkeypatch):
     # the coder has no pass-through mode, so invoking fails instead.
     node = build_coder_node(model="stub")
     with pytest.raises(Exception, match="credentials"):
-        node({"task": "x", "coder_output": "", "cleaner_output": "", "error": None})
+        node({"task": "x", "coder_output": "", "error": None})

@@ -73,31 +73,15 @@ class CoderOutput(BaseModel):
         return value
 
 
-class CleanerOutput(BaseModel):
-    """Structured output of the cleaner agent.
-
-    Fields:
-        code: The input code passed through to the cleaner.
-        refined: The code after applying semantic clean code standards.
-        llm_refine_applied: Whether the LLM semantic refinement ran.
-    """
-
-    code: str = Field(description="The input code passed through.")
-    refined: str = Field(description="Semantic-clean-code result.")
-    llm_refine_applied: bool = Field(description="Whether LLM refinement ran.")
-
-
 class TaskState(TypedDict):
-    """Shared state passed between the coder and cleaner graph nodes.
+    """Shared state for the coder node (coder-only since TASK-009).
 
     Keys:
         task: The user-supplied task text (non-empty).
         coder_output: Candidate code produced by the coder node.
-        cleaner_output: Code after the cleaner node (semantic clean code).
         error: Optional failure message propagated to the CLI.
     """
 
     task: str
     coder_output: str
-    cleaner_output: str
     error: str | None

@@ -1,8 +1,8 @@
 """Local SCM (git) layer for repo mode: worktrees, commits, merge, scoped file IO.
 
-Local-only by design (no remote clone/push/PR). Each agent gets its own git
-worktree on a dedicated branch; the cleaner consumes the coder's work by merging
-the coder's commit into its own worktree (SwarmForge-style commit->merge).
+Local-only by design (no remote clone/push/PR). The coder gets its own git
+worktree on a dedicated branch and commits there (single worktree since
+TASK-009 removed the second hop).
 
 All functions operate on a local git repo and are testable offline against a temp
 repo. File paths are validated so no I/O escapes the worktree.

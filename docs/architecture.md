@@ -19,7 +19,8 @@ HUMAN → TASK.md → AGENT SESSION → repository (inspect/edit/test)
 
 Coordinator, planner, swarm, message bus, vector DB, Redis/Postgres, memory
 server. No LangGraph pipeline as the backbone — the `START → coder → cleaner → END`
-graph survives only as an opt-in experiment (see `evals/results/003-cleaner-pilot.md`).
+graph was removed in TASK-009 (rejected as default in 003/004); runners archived
+in `evals/archive/`, results kept in `evals/results/`.
 
 ## Layout
 

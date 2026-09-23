@@ -1,8 +1,11 @@
-"""Thin CLI composing the coder->cleaner pipeline graph.
+"""Thin CLI composing the coder node (coder-only, single LLM call).
 
 Mirrors the ``aiharness-hello`` / ``aiharness-llm`` CLI shape: exit codes
-``0`` success, ``1`` usage, ``4`` runtime. It composes the library graph and
+``0`` success, ``1`` usage, ``4`` runtime. It composes the library node and
 never holds business logic (constitution Principle I).
+
+Coder-only since TASK-009 (second hop rejected as default in evals 003/004;
+the clean-code skill survives as a coder prompt pack).
 """
 
 from __future__ import annotations
@@ -11,12 +14,9 @@ import json
 import sys
 from collections.abc import Sequence
 
-from aiharness.agents import cleaner as cleaner_agents
 from aiharness.agents import coder as coder_agents
 from aiharness.agents import repo as repo_scm
-from aiharness.agents.clean_code_policy import read_clean_code_policy
 from aiharness.agents.repo_runner import run_repo_pipeline
-from aiharness.graphs.coder_cleaner import build_coder_cleaner_graph
 from aiharness.nodes import llm as llm_nodes
 
 _USAGE = (
@@ -68,21 +68,8 @@ def _join_ctx(existing: str, value: str) -> str:
     return ",".join(part for part in [existing, value] if part)
 
 
-def _build_graph(provider: str, model: str | None):
-    coder_chat = coder_agents.default_chat(provider, model)
-    cleaner_chat = cleaner_agents.default_chat(provider, model)
-    return build_coder_cleaner_graph(
-        coder_chat=coder_chat,
-        cleaner_chat=cleaner_chat,
-        provider=provider,
-        model=model,
-        # Honor the clean-code skill (SKILL.md) when present; else bundled policy.
-        cleaner_policy=read_clean_code_policy(),
-    )
-
-
 def _run_repo_mode(options: dict[str, str], provider: str, task: str) -> int:
-    """Run repo mode (worktrees + commit->merge). Returns exit code."""
+    """Run repo mode (single coder worktree + commit). Returns exit code."""
     try:
         result = run_repo_pipeline(
             options["repo"],
@@ -108,11 +95,11 @@ def _run_repo_mode(options: dict[str, str], provider: str, task: str) -> int:
         print(json.dumps(result.as_dict()))
     else:
         print(
-            f"cleaner branch {result.branch_b} commit {result.commit_b[:8]} "
-            f"cleaned {len(result.cleaned_files)} file(s): "
-            f"{', '.join(result.cleaned_files)}"
+            f"coder branch {result.branch_a} commit {result.commit_c[:8]} "
+            f"wrote {len(result.file_paths)} file(s): "
+            f"{', '.join(result.file_paths)}"
         )
-        print(f"see: worktree {result.worktree_b}")
+        print(f"see: worktree {result.worktree_a}")
     return 0
 
 
@@ -160,10 +147,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _run_text_mode(provider: str, model: str | None, task: str, fmt: str) -> int:
-    """Execute text mode: compose the graph over a task string. Returns exit code."""
+    """Execute text mode: run the coder node once. Returns exit code."""
     try:
-        graph = _build_graph(provider, model)
-        result = graph.invoke({"task": task})
+        node = coder_agents.build_coder_node(provider=provider, model=model)
+        result = node({"task": task})
     except ValueError:
         print("error: <task> must be non-empty", file=sys.stderr)
         return 1
@@ -177,13 +164,12 @@ def _run_text_mode(provider: str, model: str | None, task: str, fmt: str) -> int
                 {
                     "task": task,
                     "coder_output": result["coder_output"],
-                    "cleaner_output": result["cleaner_output"],
                     "model": model or provider,
                 }
             )
         )
     else:
-        print(result["cleaner_output"])
+        print(result["coder_output"])
     return 0
 
 if __name__ == "__main__":

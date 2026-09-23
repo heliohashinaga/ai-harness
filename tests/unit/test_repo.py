@@ -43,19 +43,19 @@ def test_create_worktree_and_commit_returns_sha(tmp_path):
     assert scm.read_file(wt, "code.py") == "x = 1\n"
 
 
-def test_cleaner_worktree_merges_coder_commit(tmp_path):
+def test_second_worktree_derives_from_first_branch(tmp_path):
     repo = _init_repo(tmp_path)
     wt_a = scm.create_worktree(repo, _wt_dir(tmp_path, "a"), "agent/coder-x", "main")
     scm.write_file(wt_a, "code.py", "x = 1\n")
     scm.commit(wt_a, ["code.py"], "coder")
     wt_b = scm.create_worktree(
-        repo, _wt_dir(tmp_path, "b"), "agent/cleaner-x", "agent/coder-x"
+        repo, _wt_dir(tmp_path, "b"), "agent/coder-y", "agent/coder-x"
     )
     # B derives from branch A, so the coder's file is already present.
     assert scm.read_file(wt_b, "code.py") == "x = 1\n"
-    scm.write_file(wt_b, "code.py", "x = 1  # cleaned\n")
-    scm.commit(wt_b, ["code.py"], "cleaner")
-    assert scm.read_file(wt_b, "code.py") == "x = 1  # cleaned\n"
+    scm.write_file(wt_b, "code.py", "x = 1  # revised\n")
+    scm.commit(wt_b, ["code.py"], "follow-up")
+    assert scm.read_file(wt_b, "code.py") == "x = 1  # revised\n"
 
 
 @pytest.mark.parametrize("bad", ["../escape.txt", "/abs.txt", "a/../../x"])

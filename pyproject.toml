@@ -49,7 +49,8 @@ line-length = 88
 src = ["src", "tests"]
 # mutmut generates a `mutants/` workspace with instrumented copies of src/;
 # never lint those (they are only mutation-run artifacts).
-exclude = ["mutants/"]
+# evals/archive/ holds frozen experiment runners (byte-identical history).
+exclude = ["mutants/", "evals/archive/"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]

@@ -1,7 +1,7 @@
-"""Semantic clean-code policy injected into the cleaner (and coder) LLM prompts.
+"""Semantic clean-code policy injected into the coder LLM prompt as a skill pack.
 
-Derived from the project's clean-code skill (pi-agent-skills
-``skills/clean-code/SKILL.md``). Only the **semantic** judgments are included —
+Derived from the project's clean-code skill (``skills/clean-code/SKILL.md``).
+Only the **semantic** judgments are included —
 formatting is explicitly excluded (delegated to a formatter, FR-005). Keeping the
 policy as a library constant (with an optional loader that reads the skill file,
 when present) makes the agent genuinely "use the skill" without depending on a
@@ -28,6 +28,7 @@ reformat or change behavior):
 # Candidate SKILL.md locations (project then user) so the live skill file is
 # honored when present; otherwise the constant above is used.
 _SKILL_CANDIDATES = (
+    Path(__file__).resolve().parents[3] / "skills" / "clean-code" / "SKILL.md",
     Path(__file__).resolve().parents[3] / ".pi" / "skills" / "clean-code" / "SKILL.md",
     Path.home() / ".pi" / "agent" / "skills" / "clean-code" / "SKILL.md",
 )

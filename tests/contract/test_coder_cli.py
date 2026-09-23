@@ -1,4 +1,4 @@
-"""Contract tests for the aiharness-code CLI (graph mocked, no network)."""
+"""Contract tests for the aiharness-code CLI (coder node mocked, no network)."""
 
 import json
 
@@ -16,24 +16,27 @@ def fake_key(monkeypatch):
 
 
 @pytest.fixture
-def fake_graph(monkeypatch):
-    class _FakeGraph:
-        def invoke(self, state):
-            return {"coder_output": "raw", "cleaner_output": "cleaned"}
+def fake_coder(monkeypatch):
+    class _FakeCoder:
+        def __call__(self, state):
+            assert state["task"].strip(), "blank task must fail before the node"
+            return {"coder_output": "generated"}
 
-    monkeypatch.setattr(coder_cli, "_build_graph", lambda *a, **k: _FakeGraph())
+    monkeypatch.setattr(
+        coder_cli.coder_agents, "build_coder_node", lambda **k: _FakeCoder()
+    )
 
 
-def test_cli_prints_cleaned_code_exit_zero(fake_key, fake_graph, capsys):
+def test_cli_prints_coder_output_exit_zero(fake_key, fake_coder, capsys):
     assert coder_cli.main(["write an add function"]) == 0
-    assert capsys.readouterr().out == "cleaned\n"
+    assert capsys.readouterr().out == "generated\n"
 
 
-def test_cli_json_output(fake_key, fake_graph, capsys):
+def test_cli_json_output(fake_key, fake_coder, capsys):
     assert coder_cli.main(["x", "--format", "json"]) == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["coder_output"] == "raw"
-    assert payload["cleaner_output"] == "cleaned"
+    assert payload["coder_output"] == "generated"
+    assert "cleaner_output" not in payload
 
 
 @pytest.mark.parametrize(
@@ -58,26 +61,28 @@ def test_cli_missing_key_returns_hint_exit_four(monkeypatch, capsys):
 
 def test_cli_node_failure_exit_four(fake_key, monkeypatch, capsys):
     class _Boom:
-        def invoke(self, state):
+        def __call__(self, state):
             raise RuntimeError("boom")
 
-    monkeypatch.setattr(coder_cli, "_build_graph", lambda *a, **k: _Boom())
+    monkeypatch.setattr(
+        coder_cli.coder_agents, "build_coder_node", lambda **k: _Boom()
+    )
     assert coder_cli.main(["x"]) == 4
     assert capsys.readouterr().out == ""
 
 
 class _FakeRepoResult:
-    branch_b = "agent/cleaner-xyz"
-    commit_b = "a" * 40
-    cleaned_files = ["code.py"]
-    worktree_b = "/tmp/wt/cleaner-xyz"
+    branch_a = "agent/coder-xyz"
+    commit_c = "b" * 40
+    file_paths = ["code.py"]
+    worktree_a = "/tmp/wt/coder-xyz"
 
     def as_dict(self):
         return {
-            "branch_b": self.branch_b,
-            "commit_b": self.commit_b,
-            "cleaned_files": self.cleaned_files,
-            "worktree_b": self.worktree_b,
+            "branch_a": self.branch_a,
+            "commit_c": self.commit_c,
+            "file_paths": self.file_paths,
+            "worktree_a": self.worktree_a,
         }
 
 
@@ -93,7 +98,7 @@ def test_repo_mode_text_exit_zero(fake_repo, capsys):
     argv = ["--repo", "/tmp/repo", "--branch", "main", "--file", "code.py", "t"]
     assert coder_cli.main(argv) == 0
     out = capsys.readouterr().out
-    assert "cleaner-xyz" in out
+    assert "coder-xyz" in out
     assert "code.py" in out
 
 
@@ -101,7 +106,7 @@ def test_repo_mode_json(fake_repo, capsys):
     argv = ["--repo", "/tmp/repo", "--file", "a.py", "t", "--format", "json"]
     assert coder_cli.main(argv) == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["branch_b"] == "agent/cleaner-xyz"
+    assert payload["branch_a"] == "agent/coder-xyz"
 
 
 def test_repo_mode_usage_error_exit_one(fake_repo, monkeypatch, capsys):

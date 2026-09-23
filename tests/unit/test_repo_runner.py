@@ -1,4 +1,4 @@
-"""Unit tests for the repo-mode runner (worktrees + commit->merge, stubbed chats)."""
+"""Unit tests for the repo-mode runner (single coder worktree, stubbed chat)."""
 
 import subprocess
 
@@ -22,7 +22,7 @@ def _init_repo(tmp_path):
     return tmp_path
 
 
-def test_repo_pipeline_coder_then_cleaner_commits(tmp_path):
+def test_repo_pipeline_coder_commits_to_own_worktree(tmp_path):
     repo = _init_repo(tmp_path)
     worktrees = tmp_path / "wt"
     result = run_repo_pipeline(
@@ -31,37 +31,15 @@ def test_repo_pipeline_coder_then_cleaner_commits(tmp_path):
         "add a sum function",
         "code.py",
         coder_chat=lambda _p: "def add(x, y):\n    return x + y",
-        cleaner_chat=lambda _p: "def add(a, b):  # cleaned\n    return a + b",
         base_dir=worktrees,
     )
     assert result.branch == "main"
     assert result.branch_a.startswith("agent/coder-")
-    assert result.branch_b.startswith("agent/cleaner-")
     assert result.file_paths == ["code.py"]
-    assert result.cleaned_files == ["code.py"]
-    # cleaner worktree holds the CLEANED version (its own branch B)
-    cleaned = "def add(a, b):  # cleaned\n    return a + b"
-    assert scm.read_file(result.worktree_b, "code.py") == cleaned
-    # coder worktree still holds the RAW version (intact, reversible)
     raw = "def add(x, y):\n    return x + y"
     assert scm.read_file(result.worktree_a, "code.py") == raw
-    # commit_c and commit_b differ (cleaner actually changed the file)
-    assert result.commit_c != result.commit_b
-
-
-def test_repo_pipeline_cleaner_failure_fails_gracefully(tmp_path):
-    repo = _init_repo(tmp_path)
-    result = run_repo_pipeline(
-        repo,
-        "main",
-        "task",
-        "code.py",
-        coder_chat=lambda _p: "x = 1\n",
-        cleaner_chat=lambda _p: (_ for _ in ()).throw(RuntimeError("boom")),
-        base_dir=tmp_path / "wt",
-    )
-    # Cleaner couldn't refine -> code passes through unchanged.
-    assert scm.read_file(result.worktree_b, "code.py") == "x = 1\n"
+    assert len(result.commit_c) == 40
+    assert result.as_dict()["branch_a"] == result.branch_a
 
 
 def test_repo_pipeline_reads_context_files_before_coding(tmp_path):
@@ -79,7 +57,6 @@ def test_repo_pipeline_reads_context_files_before_coding(tmp_path):
         "write a test",
         "new.cs",
         coder_chat=coder_chat,
-        cleaner_chat=lambda _p: "code",
         base_dir=tmp_path / "wt",
         context_files=["SPEC.md"],
     )
