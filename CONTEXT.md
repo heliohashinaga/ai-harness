@@ -1,4 +1,4 @@
-# AI Crew
+# AI Harness
 
 A minimal engineering harness for software development: one agent session per task, verified by evidence, extended only on measured gain.
 

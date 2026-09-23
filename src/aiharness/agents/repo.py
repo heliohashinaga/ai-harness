@@ -13,7 +13,7 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-_REPO = "agent-crew:repo"
+_REPO = "ai-harness:repo"
 
 
 class RepoError(RuntimeError):

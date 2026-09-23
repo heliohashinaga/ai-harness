@@ -56,7 +56,7 @@ def test_langsmith_trace_surfaces_pipeline_nodes(provider_key):
         cleaner_chat=cleaner_agents.default_chat("openrouter", None),
         model=None,
     )
-    project = os.environ.get("LANGSMITH_PROJECT", "agent-crew")
+    project = os.environ.get("LANGSMITH_PROJECT", "ai-harness")
     graph.invoke({"task": "write a hello function"})
 
     # Best-effort: at least one traced run exists in the project for this run.
