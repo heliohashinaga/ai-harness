@@ -14,8 +14,8 @@ from aiharness.nodes.models import Chat, CoderOutput, TaskState
 # Language-agnostic: the task itself names the desired language; the prompt does
 # not assume one.
 _PROMPT = (
-    "You are a coding agent. Write candidate code for the task below in the "
-    "language the task requests. Return ONLY the code with no explanation.\n\n"
+    "You are a coding agent. Write candidate code for the task below. "
+    "Return ONLY raw code.\n\n"
     "Task:\n{task}"
 )
 
