@@ -1,0 +1,12 @@
+verdict: PASS
+evidence:
+  build: "ruff check . — all checks passed"
+  tests: "83 passed, 2 deselected — unchanged (docs-only change)"
+  criteria:
+    - {id: readme, status: pass, proof: "001 row now 65 passed + growth note; new 004 row (0/6 fixed, 2 regressions B2) — matches results files verbatim"}
+    - {id: benchmark, status: pass, proof: "002 entry now measured outcome, no stale blocked claim; new 004 entry; queue renumbered to 005+"}
+    - {id: gate, status: pass, proof: "ruff + pytest green via direct .venv run (uv trampoline env issue pre-existing, unrelated)"}
+feedback: "none — done first attempt"
+attempts: 1
+tokens: {prompt: 0, completion: 0, total: 0}
+note: "operator session. Docs-only; no code touched."

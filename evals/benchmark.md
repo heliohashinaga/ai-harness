@@ -26,6 +26,7 @@ in `evals/results/`, e.g. `001-baseline.md`.
 ## Candidates queue
 
 - `001` — deterministic gate, measured 2026-09-22 (ruff green, 65 passed after the Windows subprocess-env fix).
-- `002` — single-agent task runs with provider key (blocked: no key in this shell).
+- `002` — single-agent task runs, measured 2026-09-22/23 (4/4 tasks, first-attempt 50%, retries solved by deterministic feedback, 2152 provider tokens).
 - `003` — `coder -> cleaner` pilot: REJECTED as default (3/3 vs 3/3, 2x calls, 3–25x latency). Stays opt-in.
-- `004+` — planner, reviewer, swarm only as named experiments (a cleaner retest needs a pre-registered buggy-output set).
+- `004` — cleaner retest on the frozen buggy set: REJECTED (0/6 fixed, 2 regressions on B2; 003 verdict stands). Stays opt-in.
+- `005+` — planner, reviewer, swarm only as named experiments.

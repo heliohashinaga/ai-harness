@@ -37,9 +37,10 @@ Work a task per [`docs/workflow.md`](docs/workflow.md):
 
 | Experiment | Result |
 |---|---|
-| `evals/results/001-baseline.md` | gate green: ruff clean, 72 passed |
+| `evals/results/001-baseline.md` | gate green: ruff clean, 65 passed (suite has since grown to 83) |
 | `evals/results/002-baseline-agent-runs.md` | 4/4 tasks, first-attempt 50%, retries solved by deterministic feedback |
 | `evals/results/003-cleaner-pilot.md` | cleaner **rejected** as default: 3/3 vs 3/3 at 2x calls, 3–25x latency |
+| `evals/results/004-cleaner-retest.md` | cleaner retest on frozen buggy set: **0/6 fixed**, 2 regressions (B2) — 003 verdict stands, stays opt-in |
 
 New layers (planner, reviewer, swarm) enter only by beating these numbers —
 see [`evals/benchmark.md`](evals/benchmark.md) and [`docs/extending.md`](docs/extending.md).
