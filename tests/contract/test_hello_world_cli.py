@@ -10,19 +10,19 @@ import sys
 
 import pytest
 
-from aiharness import cli
+from aiharness import hello_cli
 
 pytestmark = pytest.mark.contract
 
 
 def test_cli_returns_greeting_on_stdout_with_exit_zero(monkeypatch, capsys):
-    code = cli.main(["hello", "world"])
+    code = hello_cli.main(["hello", "world"])
     assert code == 0
     assert capsys.readouterr().out == "Hello, world!\n"
 
 
 def test_cli_json_output(monkeypatch, capsys):
-    code = cli.main(["hello", "world", "--format", "json"])
+    code = hello_cli.main(["hello", "world", "--format", "json"])
     out = capsys.readouterr().out
     assert code == 0
     assert json.loads(out) == {"input": "world", "greeting": "Hello, world!"}
@@ -38,7 +38,7 @@ def test_cli_json_output(monkeypatch, capsys):
     ],
 )
 def test_cli_usage_errors_exit_one(argv, monkeypatch, capsys):
-    code = cli.main(argv)
+    code = hello_cli.main(argv)
     assert code == 1
     assert capsys.readouterr().out == ""
 
@@ -48,8 +48,8 @@ def test_cli_runtime_failure_exit_four(monkeypatch, capsys):
         def invoke(self, text):
             raise RuntimeError("boom")
 
-    monkeypatch.setattr(cli, "build_hello_world_node", lambda: _ExplodingNode())
-    code = cli.main(["hello", "world"])
+    monkeypatch.setattr(hello_cli, "build_hello_world_node", lambda: _ExplodingNode())
+    code = hello_cli.main(["hello", "world"])
     assert code == 4
     assert capsys.readouterr().out == ""
 
@@ -62,7 +62,7 @@ def test_cli_runtime_failure_exit_four(monkeypatch, capsys):
     ],
 )
 def test_cli_invalid_format_exits_one(argv, capsys):
-    code = cli.main(argv)
+    code = hello_cli.main(argv)
     assert code == 1
     captured = capsys.readouterr()
     assert captured.out == ""
@@ -70,13 +70,13 @@ def test_cli_invalid_format_exits_one(argv, capsys):
 
 
 def test_cli_dry_run_text_prints_plan(capsys):
-    code = cli.main(["hello", "world", "--dry-run"])
+    code = hello_cli.main(["hello", "world", "--dry-run"])
     assert code == 0
     assert capsys.readouterr().out == "dry-run: Hello, world!\n"
 
 
 def test_cli_dry_run_json_marks_payload(capsys):
-    code = cli.main(["hello", "world", "--dry-run", "--format", "json"])
+    code = hello_cli.main(["hello", "world", "--dry-run", "--format", "json"])
     assert code == 0
     assert json.loads(capsys.readouterr().out) == {
         "input": "world",
@@ -86,9 +86,9 @@ def test_cli_dry_run_json_marks_payload(capsys):
 
 
 def test_console_module_smoke_end_to_end():
-    """Run the real `python -m aiharness.cli` entry point end-to-end."""
+    """Run the real `python -m aiharness.hello_cli` entry point end-to-end."""
     result = subprocess.run(
-        [sys.executable, "-m", "aiharness.cli", "hello", "world"],
+        [sys.executable, "-m", "aiharness.hello_cli", "hello", "world"],
         capture_output=True,
         text=True,
         check=False,

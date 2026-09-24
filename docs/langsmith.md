@@ -51,7 +51,7 @@ The three variables:
 LangChain auto-instruments when the env vars are set — **no code changes needed**.
 
 ```bash
-uv run python -m aiharness.cli hello "world"
+uv run python -m aiharness.hello_cli hello "world"
 ```
 
 Each run is captured as a trace. Open **smith.langchain.com → your project** to
